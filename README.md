@@ -91,3 +91,27 @@ data["Duration"]
 (* Plot voltage vs time *)
 PhotoquickPlot[data]
 ```
+
+---
+
+## Photometric Calibration with Calibrite & ArgyllCMS (`spotread`)
+
+The Calibrite device provides absolute DC luminance in $\text{cd/m}^2$ (nits) but has zero temporal speed. You can cross-calibrate the Pico in Mathematica using ArgyllCMS's [`spotread`](file:///opt/homebrew/bin/spotread):
+
+1. **Take spot readings on static grey steps:**
+   ```bash
+   spotread -e -y l
+   ```
+2. **Build a LUT in Mathematica:**
+   ```mathematica
+   (* counts from Pico vs nits from spotread *)
+   lut = Interpolation[{{countBlack, nitsBlack}, ..., {countWhite, nitsWhite}}, InterpolationOrder -> 1];
+
+   (* Map dynamic ADC waveform to physical nits *)
+   instantaneousNits = lut /@ data["RawCounts"];
+
+   (* Numerical time-average over stimulus window *)
+   picoMeanNits = Mean[instantaneousNits];
+   ```
+3. **Compare with Calibrite:** Place the Calibrite on the flashing/checkerboard stimulus to verify if the hardware optical integration matches `picoMeanNits` and $(L_{\text{white}} - L_{\text{black}})/2$.
+

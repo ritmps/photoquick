@@ -92,3 +92,23 @@ If edge analysis reveals sensor-limited roll-off, moving to a photodiode increas
      - **Firmware: Zero changes required.** The RP2040 ADC0 continues reading the 0–3.3V conditioned output.
      - **Sampling Rate:** You can safely crank the ADC up to the hardware ceiling of **500 kS/s** (2 µs per sample) knowing the front-end analog bandwidth is no longer the bottleneck.
 
+### 3. Absolute Photometric Calibration via Calibrite & ArgyllCMS
+- **The Role Division:**
+  - **Pico + Sensor:** High temporal resolution (10 µs / 100 kS/s), relative ADC counts.
+  - **Calibrite Device:** Zero temporal resolution (integrates over 200–1000 ms), absolute photometric accuracy in $\text{cd/m}^2$ (nits) matched to human photopic $V(\lambda)$.
+- **ArgyllCMS `spotread` Tool:**
+  - Located on host macOS at `/opt/homebrew/bin/spotread`.
+  - Runs in emissive mode (`spotread -e -y l`) to return single-shot $XYZ$ and $Y$ ($\text{cd/m}^2$) without heavyweight profiling workflows.
+- **Calibration Protocol (LUT Generation in Mathematica):**
+  1. Display static patches at grey steps (0%, 20%, 40%, 60%, 80%, 100%).
+  2. Measure steady-state absolute luminance $L_i$ ($\text{cd/m}^2$) with `spotread`.
+  3. Measure steady-state ADC counts $C_i$ with the Pico.
+  4. In Mathematica, create an interpolation function: `lut = Interpolation[Transpose[{countsList, nitsList}], InterpolationOrder -> 1]`.
+  5. This single LUT absorbs RP2040 ADC non-linearities (DNL spikes), phototransistor gain curvature, and sensor spectral mismatch.
+- **The Integration Hypothesis Test:**
+  - Place Calibrite on the flashing/checkerboard stimulus: it outputs the physical hardware optical integration $L_{\text{meas}}$.
+  - Record the temporal waveform with the Pico. In Mathematica, compute the time-average:
+    $$\bar{L}_{\text{pico}} = \frac{1}{T} \int_0^T \text{lut}(C(t)) \, dt = \text{Mean}[\text{lut} /@ \text{rawCounts}]$$
+  - Compare $\bar{L}_{\text{pico}}$ against $L_{\text{meas}}$ and $(L_{\text{white}} - L_{\text{black}})/2$ to isolate whether deviations are caused by display response asymmetry (e.g. slow rise vs. fast fall) or backlight duty cycle shifts.
+
+
