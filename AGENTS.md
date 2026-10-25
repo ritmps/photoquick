@@ -52,3 +52,43 @@ I want to read this into Mathematica, as usual, for analysis, which I can do mos
   - Mathematica notebooks (`*.nb`) containing large embedded outputs/rasters.
   - Captured raw measurement datasets (`*.bin`, `*.dat`, large `.csv`).
   - Images, plots, and figures (`*.png`, `*.jpg`, `*.pdf`).
+
+## Howto: Physical Sampling Limits & Sensor Upgrade Paths
+
+### 1. Phototransistor Physical Sampling Limits
+* **The Physics Bottleneck:**
+  - Phototransistors use bipolar multiplication ($\beta \approx 100\text{--}500$) to amplify photocurrent.
+  - Base charge storage and the Miller effect ($C_{cb} \times \beta$) dictate transition speeds.
+  - **Asymmetric response:** Rise time ($t_r$) is typically 2–8 µs, but **fall time ($t_f$) is 5–25 µs** because stored minority carriers have no base lead to drain through and must recombine internally.
+  - **Bandwidth:** Typically 20 kHz – 100 kHz (dependent on load resistor $R_L$).
+* **Sampling Ceiling:**
+  - ADC rates beyond **50–100 kS/s** yield "empty" oversampling: you resolve the transistor's internal RC discharge curve rather than true display temporal transients.
+* **What it CAN measure accurately:**
+  - Display refresh rates and frame drops (60 Hz / 16.6 ms, 120 Hz / 8.3 ms, 240 Hz / 4.16 ms).
+  - LCD pixel transitions (Gray-to-Gray typically 1 ms to 15 ms).
+  - Backlight PWM dimming up to ~1–2 kHz.
+  - Average luminance integration across frames.
+* **What it CANNOT measure accurately:**
+  - Microsecond-level subpixel pulse modulation (e.g., high-frequency OLED PWM >10 kHz).
+  - True rise/fall edges of microLED or direct-LED wall strobe pulses (sensor will smooth the square edges into exponentials).
+
+### 2. Moving to a Faster Photodiode
+If edge analysis reveals sensor-limited roll-off, moving to a photodiode increases sensor bandwidth from ~50 kHz to >10 MHz (nanosecond response).
+
+* **The Trade-Off (Why it needs active circuitry):**
+  - Photodiodes output microamps ($I_p \approx 0.1\text{--}10\ \mu\text{A}$ at display luminance).
+  - Pushing $10\ \mu\text{A}$ through a passive resistor into the ADC creates a dilemma:
+    - Small $R_L$ (1 kΩ) $\to$ 10 mV swing (lost in ADC noise).
+    - Large $R_L$ (100 kΩ) $\to$ 1 V swing, but stray capacitance ($C_{stray} \approx 10\text{ pF}$) forms an RC low-pass filter ($\tau = 1\ \mu\text{s}$), destroying the speed advantage.
+* **What's Needed to Swap In a Photodiode:**
+  1. **Active Circuit: Transimpedance Amplifier (TIA)**
+     - Single rail-to-rail, high-gain-bandwidth op-amp (e.g., OPA350, OPA356, MCP6022, or AD8065) running from 3.3V.
+     - Photodiode in **photoconductive mode** (reverse biased: cathode to 3.3V, anode to op-amp inverting input) minimizes junction capacitance ($C_j$).
+     - Feedback resistor $R_f$ (e.g. 100 kΩ – 470 kΩ) sets gain ($V_{out} = I_p \times R_f$).
+     - Small feedback capacitor $C_f$ (1–5 pF) across $R_f$ stabilizes the TIA loop against ringing.
+  2. **Alternative (Pre-built Breakout):**
+     - A dedicated photodiode + TIA sensor breakout module (or discrete TIA daughterboard).
+  3. **Pico Hardware & Firmware Changes:**
+     - **Firmware: Zero changes required.** The RP2040 ADC0 continues reading the 0–3.3V conditioned output.
+     - **Sampling Rate:** You can safely crank the ADC up to the hardware ceiling of **500 kS/s** (2 µs per sample) knowing the front-end analog bandwidth is no longer the bottleneck.
+
