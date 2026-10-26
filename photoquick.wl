@@ -125,26 +125,34 @@ PhotoquickCapture[portInput_: Automatic, OptionsPattern[]] := Module[
     "    os.close(fd)\n",
     "    return bytes(buf[:target])\n",
     "def span_volts(b):\n",
-    "    if len(b) < 1000 or b[:4] != b'PQ01': return 0.0, 0.0, 0.0\n",
+    "    if len(b) < 1000 or b[:4] != b'PQ01': return 0.0, 0\n",
     "    n = (len(b) - 8) // 2\n",
     "    c = struct.unpack(f'<{n}H', b[8:8+2*n])\n",
     "    sc = sorted(c)\n",
-    "    s_all = (sc[int(0.95*n)] - sc[int(0.05*n)]) * (3.3 / 4095.0)\n",
-    "    c1, c2 = sorted(c[:n//4]), sorted(c[(3*n)//4:])\n",
-    "    s1 = (c1[int(0.95*len(c1))] - c1[int(0.05*len(c1))]) * (3.3 / 4095.0)\n",
-    "    s2 = (c2[int(0.95*len(c2))] - c2[int(0.05*len(c2))]) * (3.3 / 4095.0)\n",
-    "    return s_all, s1, s2\n",
+    "    p05, p95 = sc[int(0.05*n)], sc[int(0.95*n)]\n",
+    "    s_all = (p95 - p05) * (3.3 / 4095.0)\n",
+    "    if s_all < min_span_v: return s_all, 0\n",
+    "    mid = 0.5 * (p05 + p95)\n",
+    "    hyst = 0.18 * (p95 - p05)\n",
+    "    th_hi, th_lo = mid + hyst, mid - hyst\n",
+    "    state = 1 if c[0] >= mid else 0\n",
+    "    edges = 0\n",
+    "    for x in c[::10]:\n",
+    "        if state == 0 and x >= th_hi:\n",
+    "            state = 1; edges += 1\n",
+    "        elif state == 1 and x <= th_lo:\n",
+    "            state = 0; edges += 1\n",
+    "    return s_all, edges\n",
     "t_start = time.time()\n",
     "buf = b''\n",
     "while True:\n",
     "    buf = grab_once()\n",
     "    if not wait_flicker: break\n",
-    "    s_all, s1, s2 = span_volts(buf)\n",
-    "    if s_all >= min_span_v:\n",
-    "        if s1 >= min_span_v and s2 >= min_span_v:\n",
-    "            break\n",
+    "    s_all, edges = span_volts(buf)\n",
+    "    if s_all >= min_span_v and edges >= 8:\n",
     "        buf2 = grab_once()\n",
-    "        if span_volts(buf2)[0] >= min_span_v:\n",
+    "        s2, e2 = span_volts(buf2)\n",
+    "        if s2 >= min_span_v and e2 >= 8:\n",
     "            buf = buf2\n",
     "        break\n",
     "    if (time.time() - t_start) >= timeout:\n",
@@ -248,8 +256,11 @@ iPhotoquickFlickerAnalysis[lBlack_Real, lWhite_Real, flickerData_Association, Op
   smoothN = Max[1, Round[(OptionValue["SmoothingRadiusMs"] / 1000.0) * fs]];
   vSmooth = If[smoothN > 1, MovingAverage[ArrayPad[v, smoothN, "Fixed"], 2 * smoothN + 1], v];
 
-  mid = expectedMean;
-  hyst = OptionValue["HysteresisFraction"] * span;
+  (* Use dynamic swing quantiles (3% and 97%) for edge timing & 10-90% rise/fall times,
+     while keeping static LBlack & LWhite for temporal luminance integration *)
+  {v10, v90} = Quantile[vSmooth, {0.03, 0.97}];
+  mid = 0.5 * (v10 + v90);
+  hyst = OptionValue["HysteresisFraction"] * Max[v90 - v10, 10^-6];
   thHigh = mid + hyst;
   thLow = mid - hyst;
 
@@ -274,7 +285,7 @@ iPhotoquickFlickerAnalysis[lBlack_Real, lWhite_Real, flickerData_Association, Op
   (* Compute White and Black hold durations in milliseconds *)
   allEdges = SortBy[
     Join[
-       Map[{#, "Rise"} &, risingIdx],
+      Map[{#, "Rise"} &, risingIdx],
       Map[{#, "Fall"} &, fallingIdx]
     ],
     First
@@ -308,36 +319,39 @@ iPhotoquickFlickerAnalysis[lBlack_Real, lWhite_Real, flickerData_Association, Op
   intErrV = cycleBoundedMean - expectedMean;
   intErrPct = 100.0 * (cycleBoundedMean - expectedMean) / span;
 
-  (* Estimate 10%-90% Rise Time and 90%-10% Fall Time around each transition *)
-  v10 = lBlack + 0.10 * span;
-  v90 = lBlack + 0.90 * span;
-  winSamples = Min[Round[0.020 * fs], Floor[n / 4]]; (* +/- 20ms search window *)
+  (* Estimate 10%-90% Rise Time and 90%-10% Fall Time across dynamic swing *)
+  {v10, v90} = {v10 + 0.10 * (v90 - v10), v10 + 0.90 * (v90 - v10)};
+  winSamples = If[Length[cyclePeriodsMs] > 0,
+    Max[10, Round[0.35 * (Mean[cyclePeriodsMs] / 1000.0) * fs]],
+    Min[Round[0.025 * fs], Floor[n / 4]]
+  ];
 
   Do[
-    seg = vSmooth[[Max[1, idx - winSamples] ;; Min[n, idx + winSamples]]];
-    i10 = FirstPosition[seg, _?(# >= v10 &), None, {1}];
-    i90 = FirstPosition[seg, _?(# >= v90 &), None, {1}];
-    If[ListQ[i10] && ListQ[i90] && First[i90] > First[i10],
-      AppendTo[riseTimesMs, 1000.0 * (First[i90] - First[i10]) / fs]
+    If[idx > winSamples && idx + winSamples <= n,
+      i10 = FirstPosition[Reverse[vSmooth[[idx - winSamples ;; idx]]], _?(# <= v10 &), None, {1}];
+      i90 = FirstPosition[vSmooth[[idx ;; idx + winSamples]], _?(# >= v90 &), None, {1}];
+      If[ListQ[i10] && ListQ[i90],
+        AppendTo[riseTimesMs, 1000.0 * ((First[i10] - 1) + (First[i90] - 1)) / fs]
+      ]
     ],
     {idx, risingIdx}
   ];
 
   Do[
-    seg = vSmooth[[Max[1, idx - winSamples] ;; Min[n, idx + winSamples]]];
-    i90 = FirstPosition[seg, _?(# <= v90 &), None, {1}];
-    i10 = FirstPosition[seg, _?(# <= v10 &), None, {1}];
-    If[ListQ[i90] && ListQ[i10] && First[i10] > First[i90],
-      AppendTo[fallTimesMs, 1000.0 * (First[i10] - First[i90]) / fs]
+    If[idx > winSamples && idx + winSamples <= n,
+      i90 = FirstPosition[Reverse[vSmooth[[idx - winSamples ;; idx]]], _?(# >= v90 &), None, {1}];
+      i10 = FirstPosition[vSmooth[[idx ;; idx + winSamples]], _?(# <= v10 &), None, {1}];
+      If[ListQ[i90] && ListQ[i10],
+        AppendTo[fallTimesMs, 1000.0 * ((First[i90] - 1) + (First[i10] - 1)) / fs]
+      ]
     ],
     {idx, fallingIdx}
   ];
 
-  (* Check for frame-rate / refresh-rate pulldown aliasing (e.g. 3:2 pulldown -> ratio 1.5) *)
+  (* Check for frame-rate / refresh-rate pulldown aliasing (frame-to-frame hold jitter > 10%) *)
   aliasingQ = If[Length[whiteDurationsMs] >= 3 && Length[blackDurationsMs] >= 3,
-    (Max[whiteDurationsMs] / Max[Min[whiteDurationsMs], 0.1] > 1.25) ||
-    (Max[blackDurationsMs] / Max[Min[blackDurationsMs], 0.1] > 1.25) ||
-    (Abs[Mean[whiteDurationsMs] - Mean[blackDurationsMs]] / Max[Mean[whiteDurationsMs], 0.1] > 0.12),
+    (Max[whiteDurationsMs] / Max[Min[whiteDurationsMs], 0.1] > 1.10) ||
+    (Max[blackDurationsMs] / Max[Min[blackDurationsMs], 0.1] > 1.10),
     False
   ];
 
@@ -386,7 +400,7 @@ PhotoquickFlickerDashboard[analysis_Association] := Module[
       Transpose[{1000.0 * t[[1 ;; nShow]], v[[1 ;; nShow]]}],
       PlotStyle -> Directive[RGBColor[0.12, 0.47, 0.71], AbsoluteThickness[1.2]],
       AxesLabel -> {"Time (ms)", "Signal (V)"},
-      PlotRange -> All,
+      PlotRange -> {{0, 1000.0 * t[[nShow]]}, {0, 1.05 * Max[lW, Max[v[[1 ;; nShow]]]]}},
       PlotLabel -> StringTemplate["Waveform & Temporal Integration (Norm Mean = `` vs 0.500, Error = ``%)"][
         NumberForm[analysis["NormalizedMean"], {4, 3}],
         NumberForm[analysis["IntegrationErrorPercent"], {4, 1}]
@@ -410,10 +424,9 @@ PhotoquickFlickerDashboard[analysis_Association] := Module[
       Joined -> True,
       PlotMarkers -> Automatic,
       PlotStyle -> {RGBColor[0.95, 0.6, 0.1], RGBColor[0.2, 0.2, 0.2]},
-      PlotLegends -> {"White Frame Hold (ms)", "Black Frame Hold (ms)"},
       AxesLabel -> {"Frame #", "Hold Duration (ms)"},
-      PlotRange -> {0, All},
-      PlotLabel -> StringTemplate["Frame Hold Durations (Aliasing Detected: `` | t_rise = `` ms, t_fall = `` ms)"][
+      PlotRange -> {{0.5, Max[Length[whiteHolds], Length[blackHolds]] + 0.5}, {0, 1.25 * Max[Join[whiteHolds, blackHolds]]}},
+      PlotLabel -> StringTemplate["Frame Hold Durations: Orange=White, Black=Dark (Aliasing: `` | t_rise=`` ms, t_fall=`` ms)"][
         analysis["AliasingDetected"],
         NumberForm[analysis["RiseTime10To90Ms"], {3, 2}],
         NumberForm[analysis["FallTime90To10Ms"], {3, 2}]
@@ -423,7 +436,7 @@ PhotoquickFlickerDashboard[analysis_Association] := Module[
     Graphics[{Text["Insufficient transitions detected for hold-duration plot", {0, 0}]}, ImageSize -> 700]
   ];
 
-  GraphicsColumn[{pWave, pHolds}, Spacings -> 20]
+  GraphicsColumn[{pWave, pHolds}, Spacings -> 15, ImageSize -> 720]
 ];
 
 (* -------------------------------------------------------------------------- *)

@@ -169,7 +169,28 @@ data["Duration"]
 
 (* Plot voltage vs time *)
 PhotoquickPlot[data]
+
+(* Analyze temporal luminance integration, rise/fall times, and frame-rate aliasing *)
+analysis = PhotoquickFlickerAnalysis[blackData, whiteData, flickerData]
+PhotoquickFlickerDashboard[analysis]
+
+(* Generate frame-exact alternating Black/White stimulus videos (FullField, Checkerboard, Stripes) *)
+PhotoquickGenerateStimulus["stimuli/fullfield_30fps.mp4", "FrameRate" -> 30, "Duration" -> 120.0, "Pattern" -> "FullField"]
 ```
+
+---
+
+## Archived Metrology Datasets & Temporal Integration Study (`captures/`)
+
+Empirical `100 kS/s` measurements of temporal luminance integration ($\bar{L} \stackrel{?}{=} \frac{1}{2}(L_{\text{black}} + L_{\text{white}})$), liquid-crystal rise/fall asymmetry ($t_{\text{rise}} > t_{\text{fall}}$), and frame-rate vs. refresh-rate pulldown aliasing (`17`, `24`, `30`, and `60 fps` on a `120 Hz` ProMotion IPS LCD) are archived in [`captures/ipad_lcd_120hz/`](file:///Users/fxpppr/GitHub/photoquick/captures/ipad_lcd_120hz):
+
+* **Full Technical Writeup & Mathematical Model:** [`captures/ipad_lcd_120hz/README.md`](file:///Users/fxpppr/GitHub/photoquick/captures/ipad_lcd_120hz/README.md)
+* **Test Stimulus Suite (`17`, `24`, `30`, `60 fps` Full-Field & Coarse Checkerboards):** [`stimuli/`](file:///Users/fxpppr/GitHub/photoquick/stimuli)
+* **Key Empirical Findings (iPad Pro `120 Hz` IPS LCD, $R_L = 9.4\text{ k}\Omega$):**
+  * **Static Full-Field Baselines:** $L_{\text{white}} = 0.5812\text{ V}$ (`721.2` counts), $L_{\text{black}} = 0.0302\text{ V}$ (`37.4` counts), expected 50/50 temporal midpoint $= \mathbf{0.3057\text{ V}}$ (normalized `0.500`).
+  * **Systematic Temporal Integration Deficit (`-17.5%` to `-20.3%`):** Across all four frame rates (`17`, `24`, `30`, `60 fps`), the cycle-bounded temporal mean $\bar{L}$ only reaches **`0.1941 – 0.2093 V`** (normalized **`0.297 – 0.325`**), driven by (1) dynamic White peak clamping (`0.405 – 0.415 V` vs. `0.5812 V` static) and (2) slower liquid-crystal rise time ($t_{\text{rise}} \approx 17.5\text{ ms}$) than fall time ($t_{\text{fall}} \approx 11.4\text{ ms}$), which pinches every White pulse `~6.8 – 7.3 ms` narrower than every Black trough.
+  * **Direct Detection of `8:7` Pulldown Aliasing (`17 fps` on `120 Hz`):** At `17 fps` ($\frac{120}{17} = 7\frac{1}{17}$ refreshes/frame), 16 out of 17 frames hold for `7` refresh ticks (`54.70 ms` above midpoint) while every 17th frame holds for `8` refresh ticks (`63.07 ms`)—an exact **`+8.37 ms` (`1/120 Hz`)** pulldown leap ([`fullfield_17fps_dashboard.png`](file:///Users/fxpppr/GitHub/photoquick/captures/ipad_lcd_120hz/fullfield_17fps_dashboard.png)).
+  * **High-Frequency Sawtooth Truncation (`60 fps`):** At `60 fps` (`16.67 ms`/frame $< t_{\text{rise}}$), the LCD never reaches a flat plateau, producing a pure sawtooth wave ([`fullfield_60fps_dashboard.png`](file:///Users/fxpppr/GitHub/photoquick/captures/ipad_lcd_120hz/fullfield_60fps_dashboard.png)).
 
 ---
 
