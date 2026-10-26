@@ -100,8 +100,17 @@ void dump_binary() {
     uint32_t rate = current_rate_hz;
     Serial.write((const uint8_t*)&rate, 4);
 
-    // Stream raw buffer
-    Serial.write((const uint8_t*)sample_buffer, NUM_SAMPLES * sizeof(uint16_t));
+    // Stream raw buffer in 4 KB chunks with brief pacing so macOS XNU tty buffer (64 KB TTYHOG) never drops bytes
+    const uint8_t* ptr = (const uint8_t*)sample_buffer;
+    size_t remaining = NUM_SAMPLES * sizeof(uint16_t);
+    const size_t chunk_size = 4096;
+    while (remaining > 0) {
+        size_t to_write = (remaining < chunk_size) ? remaining : chunk_size;
+        Serial.write(ptr, to_write);
+        ptr += to_write;
+        remaining -= to_write;
+        delay(2);
+    }
     Serial.flush();
 }
 
