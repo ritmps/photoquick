@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 580" width="100%" height="100%">
+  <defs>
+    <style>
+      .bb-bg { fill: #f5f3e9; stroke: #c8c2b0; stroke-width: 2; }
+      .bb-rail-red { stroke: #d32f2f; stroke-width: 2.5; }
+      .bb-rail-blue { stroke: #1976d2; stroke-width: 2.5; }
+      .pico-pcb { fill: #00753a; stroke: #004d26; stroke-width: 2; }
+      .pico-chip { fill: #1a1a1a; stroke: #333333; stroke-width: 1; }
+      .pico-usb { fill: #b0bec5; stroke: #78909c; stroke-width: 1.5; }
+      .pico-pad { fill: #ffd54f; stroke: #c6a700; stroke-width: 1; }
+      .ic-body { fill: #212121; stroke: #424242; stroke-width: 1.5; }
+      .ic-pin { fill: #cfd8dc; stroke: #78909c; stroke-width: 1; }
+      .wire-red { stroke: #e53935; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .wire-blk { stroke: #212121; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .wire-blu { stroke: #1976d2; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .wire-grn { stroke: #43a047; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .label { font-family: sans-serif; font-size: 13px; font-weight: bold; }
+    </style>
+  </defs>
+
+  <rect width="980" height="580" fill="#e8eaed"/>
+  
+  <!-- Breadboard Base -->
+  <rect x="30" y="40" width="920" height="500" rx="10" class="bb-bg"/>
+
+  <!-- Power Rails -->
+  <line x1="60" y1="65" x2="920" y2="65" class="bb-rail-red"/>
+  <line x1="60" y1="85" x2="920" y2="85" class="bb-rail-blue"/>
+  <line x1="60" y1="495" x2="920" y2="495" class="bb-rail-red"/>
+  <line x1="60" y1="515" x2="920" y2="515" class="bb-rail-blue"/>
+
+  <!-- Center Divider -->
+  <rect x="50" y="285" width="880" height="18" fill="#dfdac8"/>
+
+  <!-- Raspberry Pi Pico -->
+  <g transform="translate(100, 120)">
+    <rect x="0" y="0" width="150" height="340" rx="6" class="pico-pcb"/>
+    <rect x="40" y="-12" width="70" height="40" rx="3" class="pico-usb"/>
+    <rect x="40" y="100" width="70" height="70" rx="2" class="pico-chip"/>
+    <text x="75" y="140" text-anchor="middle" fill="#888888" font-family="monospace" font-size="11">RP2040</text>
+    <text x="75" y="240" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="bold">Raspberry Pi</text>
+    <text x="75" y="260" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13">Pico</text>
+
+    <!-- Pins -->
+    <rect x="135" y="120" width="15" height="10" class="pico-pad"/>
+    <text x="125" y="130" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">36 (3V3)</text>
+    <rect x="135" y="210" width="15" height="10" class="pico-pad"/>
+    <text x="125" y="220" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">31 (ADC0)</text>
+    <rect x="135" y="280" width="15" height="10" class="pico-pad"/>
+    <text x="125" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">38 (GND)</text>
+  </g>
+
+  <!-- DIP-8 Op-Amp (MCP6001 / OPA350) straddling center divider -->
+  <g transform="translate(480, 255)">
+    <!-- DIP-8 Body -->
+    <rect x="0" y="0" width="90" height="75" rx="3" class="ic-body"/>
+    <circle cx="10" cy="37" r="5" fill="#111111"/> <!-- Notch -->
+    <!-- Pins Top: 1 (Out), 2 (-In), 3 (+In), 4 (Vss/GND) -->
+    <rect x="12" y="-10" width="8" height="12" class="ic-pin"/>
+    <rect x="32" y="-10" width="8" height="12" class="ic-pin"/>
+    <rect x="52" y="-10" width="8" height="12" class="ic-pin"/>
+    <rect x="72" y="-10" width="8" height="12" class="ic-pin"/>
+    <!-- Pins Bottom: 8 (NC/Vdd), 7 (NC), 6 (NC), 5 (Vdd) -->
+    <rect x="12" y="73" width="8" height="12" class="ic-pin"/>
+    <rect x="32" y="73" width="8" height="12" class="ic-pin"/>
+    <rect x="52" y="73" width="8" height="12" class="ic-pin"/>
+    <rect x="72" y="73" width="8" height="12" class="ic-pin"/>
+
+    <text x="45" y="42" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">MCP6001</text>
+    <text x="16" y="16" fill="#888888" font-family="monospace" font-size="9">1</text>
+    <text x="76" y="16" fill="#888888" font-family="monospace" font-size="9">4</text>
+    <text x="16" y="65" fill="#888888" font-family="monospace" font-size="9">5</text>
+    <text x="76" y="65" fill="#888888" font-family="monospace" font-size="9">8</text>
+  </g>
+
+  <!-- Photodiode BPW34 (Flat square silicon PIN package) -->
+  <g transform="translate(350, 180)">
+    <rect x="-18" y="-18" width="36" height="36" rx="2" fill="#102040" stroke="#4fc3f7" stroke-width="2"/>
+    <circle cx="0" cy="0" r="12" fill="#0d1b2a"/>
+    <text x="0" y="32" text-anchor="middle" class="label" fill="#0277bd">BPW34</text>
+    <text x="0" y="45" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#555555">Photodiode</text>
+  </g>
+
+  <!-- Feedback Resistor Rf (100k: Brown, Black, Yellow, Gold) -->
+  <g transform="translate(520, 160)">
+    <line x1="-30" y1="0" x2="30" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
+    <rect x="-18" y="-6" width="36" height="12" rx="3" fill="#d7ccc8" stroke="#8d6e63" stroke-width="1.2"/>
+    <rect x="-12" y="-6" width="4" height="12" fill="#5d4037"/>
+    <rect x="-4" y="-6" width="4" height="12" fill="#212121"/>
+    <rect x="4" y="-6" width="4" height="12" fill="#fbc02d"/>
+    <rect x="12" y="-6" width="3" height="12" fill="#ffd700"/>
+    <text x="40" y="4" class="label" fill="#5d4037">Rf: 100 kΩ</text>
+  </g>
+
+  <!-- Feedback Capacitor Cf (Ceramic Disc 2.2pF) -->
+  <g transform="translate(520, 115)">
+    <line x1="-25" y1="0" x2="25" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="10" fill="#ffb74d" stroke="#f57c00" stroke-width="1.5"/>
+    <text x="0" y="3" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold">2p2</text>
+    <text x="35" y="4" class="label" fill="#e65100">Cf: 2.2 pF</text>
+  </g>
+
+  <!-- JUMPER WIRES -->
+  <!-- 3.3V (Red): Pico Pin 36 -> Op-Amp Vdd (Pin 5) -->
+  <path d="M 250 240 C 320 240, 420 340, 496 340" class="wire-red"/>
+
+  <!-- Output (Blue): Op-Amp Pin 1 (Out) -> Pico Pin 31 (ADC0) -->
+  <path d="M 496 245 C 440 210, 360 330, 250 330" class="wire-blu"/>
+
+  <!-- Feedback loops to Pin 1 and Pin 2 -->
+  <path d="M 496 245 L 496 160" class="wire-blu" stroke-width="3"/>
+  <path d="M 516 245 C 516 190, 546 160, 546 160" class="wire-grn" stroke-width="3"/>
+  <path d="M 496 160 L 496 115" class="wire-blu" stroke-width="2"/>
+  <path d="M 546 160 L 546 115" class="wire-grn" stroke-width="2"/>
+
+  <!-- Photodiode Cathode to Op-Amp Pin 2 (-In) -->
+  <path d="M 350 195 C 410 210, 450 245, 516 245" class="wire-grn"/>
+
+  <!-- GND (Black): Photodiode Anode, Op-Amp Pin 3 (+In), Pin 4 (Vss) -> Pico Pin 38 -->
+  <path d="M 350 165 C 330 140, 310 400, 250 400" class="wire-blk"/>
+  <path d="M 536 245 C 536 270, 556 245, 556 245" class="wire-blk" stroke-width="3"/>
+  <path d="M 556 245 C 570 300, 500 400, 250 400" class="wire-blk"/>
+
+  <!-- Header -->
+  <text x="50" y="35" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333333">Fritzing Breadboard View: Photodiode TIA (Circuit 2)</text>
+</svg>

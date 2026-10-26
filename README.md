@@ -6,7 +6,7 @@ High-speed luminance measurement from display screens using a Raspberry Pi Pico 
 
 ## Hardware Hookup
 
-### 1. Phototransistor (Phase 1)
+### 1. Phototransistor (Phase 1 — Simplest, ~50 kHz limit)
 ```
           +3.3V (Pin 36)
                |
@@ -22,6 +22,85 @@ High-speed luminance measurement from display screens using a Raspberry Pi Pico 
 * **$R_L$ Sizing:**
   * Lower $R_L$ (500 Ω – 1 kΩ): Faster edge response, smaller voltage swing.
   * Higher $R_L$ (2 kΩ – 10 kΩ): Larger voltage swing, slower fall times.
+
+---
+
+### 2. Photodiode: Transimpedance Amplifier (Phase 2 — High Speed / MHz Bandwidth)
+
+This is the recommended photodiode circuit. By holding the inverting input at virtual ground, the photodiode junction capacitance is never charged/discharged by the voltage swing, eliminating the RC bottleneck.
+
+```
+                       +----+--- [ C_f ] (1-5 pF) ---+----+
+                       |    |                        |    |
+                       |    +--- [ R_f ] (100k-470k) +    |
+                       |                                  |
+      Photodiode       |   |\                             |
+        +---+          +---| - \                          |
+    GND | A | (Anode)      |    \                         |
+     |  |   |              |     >------------------------+---> GPIO 26 (ADC0, Pin 31)
+    --- | K | (Cathode)+---| + /   (Rail-to-Rail Op-Amp,
+        +---+          |   |/       e.g. MCP6001, OPA350)
+                       |    |
+                      GND  +3.3V (Pin 36) & GND (Pin 38)
+```
+
+* **How it works:**
+  * **Photovoltaic / Zero-bias mode:** Anode to GND, Cathode to op-amp inverting input (`-`). Non-inverting input (`+`) to GND.
+  * Photocurrent $I_p$ (flowing cathode $\to$ anode) is drawn from the op-amp output through $R_f$:
+    $$V_{out} = I_p \times R_f$$
+  * **Output swing:** Positive from ~15 mV (op-amp $V_{OL}$ in darkness) up to 3.0 V+ in bright screen light.
+  * **$R_f$ selection:** $100\text{ k}\Omega$ yields $1.0\text{ V}$ per $10\ \mu\text{A}$; $470\text{ k}\Omega$ yields $4.7\text{ V}$ per $10\ \mu\text{A}$ (saturates near 3.3V).
+  * **$C_f$ stabilization:** A small $1\text{--}5\text{ pF}$ capacitor in parallel with $R_f$ cancels the input capacitance pole and prevents op-amp ringing/oscillation.
+  * **Op-Amp requirements:** Single-supply, Rail-to-Rail I/O (RRIO), low input bias current (FET/CMOS inputs), Gain Bandwidth Product (GBW) $\ge 5\text{ MHz}$ (e.g. Microchip MCP6001/MCP6022, TI OPA350/OPA356, Analog Devices AD8605).
+  * **Decoupling:** Place a $0.1\ \mu\text{F}$ ceramic capacitor right between op-amp $V_{DD}$ and GND.
+
+#### Alternative: All-in-One Breakout (OPT101)
+If you have a TI OPT101 (monolithic photodiode + on-chip 1 MΩ TIA):
+```
+                 TI OPT101 (8-Pin DIP / Breakout)
+                   +-----------------+
+             -In --| 1             8 |-- +V  <-- +3.3V (Pin 36)
+             -V  --| 2             7 |-- NC
+            +In  --| 3    OPT101   6 |-- NC
+             -V  --| 4             5 |-- Out --> GPIO 26 (ADC0, Pin 31)
+                   +-----------------+
+                    (Pins 2, 3, 4 tied to GND, Pin 38)
+```
+
+---
+
+### 3. Photodiode: Passive Reverse-Biased (Quick & Dirty / No Op-Amp)
+
+If you don't have an op-amp on hand and just want to test a photodiode immediately:
+
+```
+          +3.3V (Pin 36)
+               |
+             [ K ] Photodiode Cathode (stripe / flat / short lead)
+             [ A ] Photodiode Anode
+               |
+ GPIO 26 <-----+  (ADC0, Pin 31)
+               |
+              [R_L] 20 kOhm - 100 kOhm
+               |
+              GND (Pin 33 or 38)
+```
+* **How it works:** Reverse-biases the diode with 3.3V. In darkness, voltage across $R_L$ is ~0V. In light, reverse photocurrent flows into $R_L$, pulling GPIO 26 up ($V = I_p \times R_L$).
+* **Trade-off:** Without an op-amp virtual ground, $R_L$ forms an RC low-pass filter with diode junction capacitance ($C_j \approx 20\text{ pF}$) and ADC pin stray capacitance ($C_{stray} \approx 5\text{ pF}$). With $R_L = 100\text{ k}\Omega$, bandwidth is capped at $\sim 50\text{--}80\text{ kHz}$ — comparable to a phototransistor, but with a much smaller signal swing. Use the active TIA above for true microsecond speeds.
+
+---
+
+### EDA & Schematic Project Files (`hardware/`)
+
+Project files for both EDA suites and standalone vector renders are located in [`hardware/`](file:///Users/fxpppr/GitHub/photoquick/hardware):
+
+* **KiCad (v7 / v8):**
+  * Project File: [`photoquick.kicad_pro`](file:///Users/fxpppr/GitHub/photoquick/hardware/kicad/photoquick.kicad_pro)
+  * Circuit 1 (Phototransistor): [`phototransistor.kicad_sch`](file:///Users/fxpppr/GitHub/photoquick/hardware/kicad/phototransistor.kicad_sch) ([Rendered SVG](file:///Users/fxpppr/GitHub/photoquick/hardware/diagrams/kicad_phototransistor_schematic.svg))
+  * Circuit 2 (Photodiode TIA): [`photodiode_tia.kicad_sch`](file:///Users/fxpppr/GitHub/photoquick/hardware/kicad/photodiode_tia.kicad_sch) ([Rendered SVG](file:///Users/fxpppr/GitHub/photoquick/hardware/diagrams/kicad_photodiode_tia_schematic.svg))
+* **Fritzing:**
+  * Circuit 1 (Phototransistor): [`phototransistor.fzz`](file:///Users/fxpppr/GitHub/photoquick/hardware/fritzing/phototransistor.fzz) / [`.fz XML`](file:///Users/fxpppr/GitHub/photoquick/hardware/fritzing/phototransistor.fz) ([Breadboard SVG](file:///Users/fxpppr/GitHub/photoquick/hardware/diagrams/fritzing_phototransistor_breadboard.svg))
+  * Circuit 2 (Photodiode TIA): [`photodiode_tia.fzz`](file:///Users/fxpppr/GitHub/photoquick/hardware/fritzing/photodiode_tia.fzz) / [`.fz XML`](file:///Users/fxpppr/GitHub/photoquick/hardware/fritzing/photodiode_tia.fz) ([Breadboard SVG](file:///Users/fxpppr/GitHub/photoquick/hardware/diagrams/fritzing_photodiode_tia_breadboard.svg))
 
 ---
 

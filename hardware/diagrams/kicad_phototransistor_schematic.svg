@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 550" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #fcfbfa; }
+      .border { stroke: #8b0000; stroke-width: 2; fill: none; }
+      .grid { stroke: #f0ede8; stroke-width: 0.5; }
+      .wire { stroke: #008000; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+      .comp { stroke: #8b0000; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+      .text-ref { font-family: monospace; font-size: 14px; font-weight: bold; fill: #008080; }
+      .text-val { font-family: monospace; font-size: 13px; fill: #0000aa; }
+      .text-pin { font-family: monospace; font-size: 11px; fill: #888888; }
+      .text-title { font-family: sans-serif; font-size: 16px; font-weight: bold; fill: #333333; }
+      .text-meta { font-family: sans-serif; font-size: 12px; fill: #666666; }
+      .junction { fill: #008000; }
+      .pico-body { fill: #eef7ee; stroke: #006600; stroke-width: 2; }
+      .arrow { fill: #8b0000; }
+    </style>
+  </defs>
+
+  <!-- Sheet Background -->
+  <rect width="900" height="550" class="bg"/>
+  <rect x="20" y="20" width="860" height="510" class="border"/>
+
+  <!-- Title Block (KiCad Style) -->
+  <rect x="520" y="450" width="360" height="80" class="border" stroke-width="1.5"/>
+  <line x1="520" y1="480" x2="880" y2="480" stroke="#8b0000" stroke-width="1"/>
+  <line x1="520" y1="505" x2="880" y2="505" stroke="#8b0000" stroke-width="1"/>
+  <line x1="720" y1="480" x2="720" y2="530" stroke="#8b0000" stroke-width="1"/>
+  <text x="530" y="472" class="text-title">Photoquick: Phototransistor (Phase 1)</text>
+  <text x="530" y="497" class="text-meta">File: phototransistor.kicad_sch</text>
+  <text x="730" y="497" class="text-meta">Rev: 1.0 (KiCad 8.0)</text>
+  <text x="530" y="522" class="text-meta">Company: ritmps / photoquick</text>
+  <text x="730" y="522" class="text-meta">Date: 2026-10-25</text>
+
+  <!-- Raspberry Pi Pico Symbol Block -->
+  <g transform="translate(560, 80)">
+    <rect x="0" y="0" width="220" height="300" rx="4" class="pico-body"/>
+    <text x="110" y="30" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold" fill="#006600">Raspberry Pi Pico</text>
+    <text x="110" y="48" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#448844">RP2040 Microcontroller</text>
+
+    <!-- Pin 36: 3V3_OUT -->
+    <line x1="-30" y1="80" x2="0" y2="80" class="wire"/>
+    <text x="-35" y="75" text-anchor="end" class="text-ref">3V3_OUT</text>
+    <text x="8" y="84" class="text-pin">Pin 36</text>
+
+    <!-- Pin 31: ADC0 / GP26 -->
+    <line x1="-30" y1="170" x2="0" y2="170" class="wire"/>
+    <text x="-35" y="165" text-anchor="end" class="text-ref">GPIO26_ADC0</text>
+    <text x="8" y="174" class="text-pin">Pin 31</text>
+
+    <!-- Pin 38: GND -->
+    <line x1="-30" y1="250" x2="0" y2="250" class="wire"/>
+    <text x="-35" y="245" text-anchor="end" class="text-ref">GND</text>
+    <text x="8" y="254" class="text-pin">Pin 38</text>
+  </g>
+
+  <!-- Phototransistor Q1 -->
+  <g transform="translate(260, 160)">
+    <circle cx="0" cy="0" r="32" class="comp"/>
+    <line x1="-12" y1="-18" x2="-12" y2="18" stroke="#8b0000" stroke-width="3"/>
+    
+    <!-- Collector Lead -->
+    <line x1="-12" y1="-10" x2="16" y2="-24" class="comp"/>
+    <line x1="16" y1="-24" x2="16" y2="-50" class="comp"/>
+    
+    <!-- Emitter Lead + Arrow -->
+    <line x1="-12" y1="10" x2="16" y2="24" class="comp"/>
+    <polygon points="16,24 8,16 14,14" class="arrow"/>
+    <line x1="16" y1="24" x2="16" y2="50" class="comp"/>
+
+    <!-- Light arrows -->
+    <g transform="translate(-40, -35)">
+      <line x1="0" y1="0" x2="20" y2="20" class="comp" stroke-width="1.8"/>
+      <polygon points="20,20 12,18 18,12" class="arrow"/>
+      <line x1="-10" y1="10" x2="10" y2="30" class="comp" stroke-width="1.8"/>
+      <polygon points="10,30 2,28 8,22" class="arrow"/>
+    </g>
+
+    <text x="35" y="-15" class="text-ref">Q1</text>
+    <text x="35" y="5" class="text-val">TEPT5600</text>
+    <text x="35" y="22" font-family="sans-serif" font-size="11" fill="#666666">(NPN Phototransistor)</text>
+  </g>
+
+  <!-- Load Resistor R1 -->
+  <g transform="translate(260, 310)">
+    <line x1="16" y1="-30" x2="16" y2="-18" class="comp"/>
+    <!-- Resistor Body (ZigZag) -->
+    <path d="M 16 -18 L 6 -12 L 26 -6 L 6 0 L 26 6 L 6 12 L 26 18 L 16 24" class="comp"/>
+    <line x1="16" y1="24" x2="16" y2="40" class="comp"/>
+
+    <text x="40" y="-5" class="text-ref">R_L (R1)</text>
+    <text x="40" y="15" class="text-val">1 kΩ</text>
+    <text x="40" y="32" font-family="sans-serif" font-size="11" fill="#666666">(500Ω - 2kΩ)</text>
+  </g>
+
+  <!-- Wires & Connections -->
+  <!-- 3.3V Line from Pico Pin 36 to Collector -->
+  <path d="M 530 160 L 276 160 L 276 110" class="wire"/>
+  
+  <!-- Output Node from Emitter to Pico Pin 31 -->
+  <path d="M 276 210 L 276 280" class="wire"/>
+  <path d="M 276 250 L 530 250" class="wire"/>
+  <circle cx="276" cy="250" r="4.5" class="junction"/>
+
+  <!-- GND Line from R1 to Pico Pin 38 -->
+  <path d="M 276 350 L 276 380 L 530 380 L 530 330" class="wire"/>
+
+  <!-- Explanatory Annotation -->
+  <rect x="50" y="420" width="380" height="90" rx="5" fill="#f4f9f4" stroke="#88b088" stroke-width="1"/>
+  <text x="65" y="445" font-family="sans-serif" font-size="13" font-weight="bold" fill="#005500">Physical Operating Characteristics:</text>
+  <text x="65" y="468" font-family="sans-serif" font-size="12" fill="#333333">• Bandwidth limited to ~50–100 kHz by base charge storage.</text>
+  <text x="65" y="488" font-family="sans-serif" font-size="12" fill="#333333">• Fall time: 5–20 µs (recombination decay).</text>
+  <text x="65" y="504" font-family="sans-serif" font-size="12" fill="#333333">• Sized for 60/120/240 Hz refresh &amp; LCD G-to-G response.</text>
+</svg>

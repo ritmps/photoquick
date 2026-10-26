@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "filename": "photoquick.kicad_pro",
+    "version": 1
+  },
+  "project": {
+    "files": []
+  },
+  "schematic": {
+    "annotate_start_num": 1,
+    "drawing": {
+      "default_line_thickness": 0.1524,
+      "default_text_size": 1.27
+    }
+  }
+}

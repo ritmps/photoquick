@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.10" icon="photoquick_pt.png">
+    <title>Photoquick - Phototransistor Detector</title>
+    <label>PQ-PT</label>
+    <date>2026-10-25</date>
+    <author>ritmps / photoquick</author>
+    <description>Circuit 1: RP2040 Pico + Phototransistor + Load Resistor</description>
+    <views>
+        <view name="breadboardView" zoom="1.0" x="0" y="0"/>
+        <view name="schematicView" zoom="1.0" x="0" y="0"/>
+        <view name="pcbView" zoom="1.0" x="0" y="0"/>
+    </views>
+    <instances>
+        <!-- Raspberry Pi Pico -->
+        <instance moduleIdRef="Raspberry-Pi-Pico_breadboard" modelIndex="1001" path="">
+            <title>Pico1</title>
+            <property name="family" value="microcontroller"/>
+            <views>
+                <breadboardView layer="breadboard">
+                    <geometry x="50" y="50" z="1.5"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry x="300" y="100" z="1.5"/>
+                </schematicView>
+            </views>
+        </instance>
+
+        <!-- Phototransistor -->
+        <instance moduleIdRef="PhototransistorModuleID" modelIndex="1002" path="">
+            <title>Q1</title>
+            <property name="part" value="Phototransistor (TEPT5600)"/>
+            <views>
+                <breadboardView layer="breadboard">
+                    <geometry x="250" y="100" z="2.0"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry x="150" y="80" z="2.0"/>
+                </schematicView>
+            </views>
+        </instance>
+
+        <!-- Load Resistor 1k -->
+        <instance moduleIdRef="ResistorModuleID" modelIndex="1003" path="">
+            <title>R1</title>
+            <property name="resistance" value="1000"/>
+            <views>
+                <breadboardView layer="breadboard">
+                    <geometry x="250" y="180" z="2.0"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry x="150" y="180" z="2.0"/>
+                </schematicView>
+            </views>
+        </instance>
+
+        <!-- Wire 1: 3.3V (Pico Pin 36) -> Phototransistor Collector -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="">
+            <title>Wire_3V3</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#e53935"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1001" connectorId="pin36"/>
+                                <connect modelIndex="1002" connectorId="collector"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+
+        <!-- Wire 2: Phototransistor Emitter -> Resistor Pin 1 -> ADC0 (Pico Pin 31) -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="">
+            <title>Wire_Signal</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#fdd835"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1002" connectorId="emitter"/>
+                                <connect modelIndex="1003" connectorId="pin1"/>
+                                <connect modelIndex="1001" connectorId="pin31"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+
+        <!-- Wire 3: Resistor Pin 2 -> GND (Pico Pin 38) -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="">
+            <title>Wire_GND</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#212121"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1003" connectorId="pin2"/>
+                                <connect modelIndex="1001" connectorId="pin38"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+    </instances>
+</module>

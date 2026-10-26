@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 560" width="100%" height="100%">
+  <defs>
+    <style>
+      .bb-bg { fill: #f5f3e9; stroke: #c8c2b0; stroke-width: 2; }
+      .bb-rail-red { stroke: #d32f2f; stroke-width: 2.5; }
+      .bb-rail-blue { stroke: #1976d2; stroke-width: 2.5; }
+      .bb-hole { fill: #2b2b2b; stroke: #8c857b; stroke-width: 0.8; }
+      .pico-pcb { fill: #00753a; stroke: #004d26; stroke-width: 2; }
+      .pico-chip { fill: #1a1a1a; stroke: #333333; stroke-width: 1; }
+      .pico-usb { fill: #b0bec5; stroke: #78909c; stroke-width: 1.5; }
+      .pico-pad { fill: #ffd54f; stroke: #c6a700; stroke-width: 1; }
+      .wire-red { stroke: #e53935; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .wire-blk { stroke: #212121; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .wire-yel { stroke: #fbc02d; stroke-width: 4.5; fill: none; stroke-linecap: round; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+      .label { font-family: sans-serif; font-size: 13px; font-weight: bold; }
+    </style>
+  </defs>
+
+  <rect width="950" height="560" fill="#e8eaed"/>
+  
+  <!-- Breadboard Base -->
+  <rect x="40" y="40" width="870" height="480" rx="10" class="bb-bg"/>
+
+  <!-- Power Rails (Top & Bottom) -->
+  <line x1="70" y1="65" x2="880" y2="65" class="bb-rail-red"/>
+  <line x1="70" y1="85" x2="880" y2="85" class="bb-rail-blue"/>
+  <line x1="70" y1="475" x2="880" y2="475" class="bb-rail-red"/>
+  <line x1="70" y1="495" x2="880" y2="495" class="bb-rail-blue"/>
+
+  <!-- Breadboard Center Divider Groove -->
+  <rect x="60" y="270" width="830" height="18" fill="#dfdac8"/>
+
+  <!-- Breadboard Pin Holes (Simplified visual array) -->
+  <g opacity="0.6">
+    <!-- Top section holes -->
+    <circle cx="100" cy="115" r="3.5" class="bb-hole"/><circle cx="100" cy="140" r="3.5" class="bb-hole"/>
+    <circle cx="100" cy="165" r="3.5" class="bb-hole"/><circle cx="100" cy="190" r="3.5" class="bb-hole"/>
+    <circle cx="100" cy="215" r="3.5" class="bb-hole"/><circle cx="100" cy="240" r="3.5" class="bb-hole"/>
+    <!-- Bottom section holes -->
+    <circle cx="100" cy="305" r="3.5" class="bb-hole"/><circle cx="100" cy="330" r="3.5" class="bb-hole"/>
+    <circle cx="100" cy="355" r="3.5" class="bb-hole"/><circle cx="100" cy="380" r="3.5" class="bb-hole"/>
+    <circle cx="100" cy="405" r="3.5" class="bb-hole"/><circle cx="100" cy="430" r="3.5" class="bb-hole"/>
+  </g>
+
+  <!-- Raspberry Pi Pico Board Representation -->
+  <g transform="translate(140, 110)">
+    <rect x="0" y="0" width="160" height="340" rx="6" class="pico-pcb"/>
+    <rect x="45" y="-12" width="70" height="40" rx="3" class="pico-usb"/>
+    <rect x="45" y="100" width="70" height="70" rx="2" class="pico-chip"/>
+    <text x="80" y="140" text-anchor="middle" fill="#888888" font-family="monospace" font-size="11">RP2040</text>
+    <text x="80" y="240" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="bold">Raspberry Pi</text>
+    <text x="80" y="260" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13">Pico</text>
+
+    <!-- Pins on Right Edge -->
+    <!-- Pin 36 (3V3 Out) -->
+    <rect x="145" y="120" width="15" height="10" class="pico-pad"/>
+    <text x="135" y="130" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">36 (3V3)</text>
+
+    <!-- Pin 31 (GPIO26 / ADC0) -->
+    <rect x="145" y="210" width="15" height="10" class="pico-pad"/>
+    <text x="135" y="220" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">31 (ADC0)</text>
+
+    <!-- Pin 38 (GND) -->
+    <rect x="145" y="280" width="15" height="10" class="pico-pad"/>
+    <text x="135" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">38 (GND)</text>
+  </g>
+
+  <!-- Physical Phototransistor (5mm clear epoxy package) -->
+  <g transform="translate(520, 180)">
+    <circle cx="0" cy="0" r="22" fill="#cce5ff" stroke="#3399ff" stroke-width="2.5" opacity="0.85"/>
+    <circle cx="0" cy="0" r="16" fill="#b3d9ff" stroke="#3399ff" stroke-width="1.5"/>
+    <rect x="-6" y="-6" width="12" height="12" fill="#1a1a1a"/>
+    <text x="35" y="-5" class="label" fill="#003366">Phototransistor (Q1)</text>
+    <text x="35" y="15" font-family="sans-serif" font-size="12" fill="#555555">Long lead = Collector</text>
+    <text x="35" y="30" font-family="sans-serif" font-size="12" fill="#555555">Short lead (flat) = Emitter</text>
+  </g>
+
+  <!-- Physical 1k Resistor (Thru-hole 1/4W: Brown, Black, Red, Gold) -->
+  <g transform="translate(520, 320)">
+    <!-- Leads -->
+    <line x1="-40" y1="0" x2="40" y2="0" stroke="#b0bec5" stroke-width="3"/>
+    <!-- Body -->
+    <rect x="-24" y="-8" width="48" height="16" rx="4" fill="#d7ccc8" stroke="#8d6e63" stroke-width="1.5"/>
+    <!-- Color Bands: Brown (1), Black (0), Red (x100), Gold (5%) -->
+    <rect x="-16" y="-8" width="5" height="16" fill="#5d4037"/>
+    <rect x="-6" y="-8" width="5" height="16" fill="#212121"/>
+    <rect x="4" y="-8" width="5" height="16" fill="#d32f2f"/>
+    <rect x="15" y="-8" width="4" height="16" fill="#ffd700"/>
+
+    <text x="50" y="5" class="label" fill="#4e342e">R1: 1 kΩ (Load)</text>
+  </g>
+
+  <!-- Fritzing-Style Flexible Jumper Wires -->
+  <!-- Red Wire: Pico Pin 36 -> Phototransistor Collector -->
+  <path d="M 300 235 C 380 235, 430 170, 505 170" class="wire-red"/>
+
+  <!-- Yellow Wire: Phototransistor Emitter -> Resistor Lead 1 & Pico Pin 31 (ADC0) -->
+  <path d="M 505 195 C 470 240, 480 320, 480 320" class="wire-yel"/>
+  <path d="M 480 320 C 440 320, 370 325, 300 325" class="wire-yel"/>
+
+  <!-- Black Wire: Resistor Lead 2 -> Pico Pin 38 (GND) -->
+  <path d="M 560 320 C 620 320, 620 420, 460 420 C 370 420, 350 395, 300 395" class="wire-blk"/>
+
+  <!-- Banner / Header -->
+  <text x="60" y="35" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333333">Fritzing Breadboard View: Phototransistor (Circuit 1)</text>
+</svg>

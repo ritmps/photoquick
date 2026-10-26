@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.10" icon="photoquick_tia.png">
+    <title>Photoquick - Photodiode TIA Circuit</title>
+    <label>PQ-TIA</label>
+    <date>2026-10-25</date>
+    <author>ritmps / photoquick</author>
+    <description>Circuit 2: RP2040 Pico + Photodiode + Rail-to-Rail OpAmp TIA</description>
+    <views>
+        <view name="breadboardView" zoom="1.0" x="0" y="0"/>
+        <view name="schematicView" zoom="1.0" x="0" y="0"/>
+        <view name="pcbView" zoom="1.0" x="0" y="0"/>
+    </views>
+    <instances>
+        <!-- Raspberry Pi Pico -->
+        <instance moduleIdRef="Raspberry-Pi-Pico_breadboard" modelIndex="1001" path="">
+            <title>Pico1</title>
+            <views>
+                <breadboardView layer="breadboard"><geometry x="50" y="50" z="1.5"/></breadboardView>
+            </views>
+        </instance>
+
+        <!-- Op-Amp MCP6001 (DIP-8 / SOT-23 Breakout) -->
+        <instance moduleIdRef="DIP8_OpAmp_ModuleID" modelIndex="1002" path="">
+            <title>U2 (MCP6001)</title>
+            <property name="part" value="Microchip MCP6001 Rail-to-Rail OpAmp"/>
+            <views>
+                <breadboardView layer="breadboard"><geometry x="300" y="120" z="2.0"/></breadboardView>
+            </views>
+        </instance>
+
+        <!-- Photodiode (BPW34) -->
+        <instance moduleIdRef="PhotodiodeModuleID" modelIndex="1003" path="">
+            <title>D1</title>
+            <property name="part" value="Silicon PIN Photodiode BPW34"/>
+            <views>
+                <breadboardView layer="breadboard"><geometry x="230" y="100" z="2.0"/></breadboardView>
+            </views>
+        </instance>
+
+        <!-- Feedback Resistor Rf (100k) -->
+        <instance moduleIdRef="ResistorModuleID" modelIndex="1004" path="">
+            <title>Rf</title>
+            <property name="resistance" value="100000"/>
+            <views>
+                <breadboardView layer="breadboard"><geometry x="300" y="60" z="2.0"/></breadboardView>
+            </views>
+        </instance>
+
+        <!-- Feedback Capacitor Cf (2.2pF) -->
+        <instance moduleIdRef="CapacitorModuleID" modelIndex="1005" path="">
+            <title>Cf</title>
+            <property name="capacitance" value="2.2pF"/>
+            <views>
+                <breadboardView layer="breadboard"><geometry x="300" y="40" z="2.0"/></breadboardView>
+            </views>
+        </instance>
+
+        <!-- Wires -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="">
+            <title>Wire_VDD</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#e53935"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1001" connectorId="pin36"/>
+                                <connect modelIndex="1002" connectorId="pin5_VDD"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+
+        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="">
+            <title>Wire_GND</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#212121"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1001" connectorId="pin38"/>
+                                <connect modelIndex="1002" connectorId="pin2_VSS"/>
+                                <connect modelIndex="1002" connectorId="pin3_IN_PLUS"/>
+                                <connect modelIndex="1003" connectorId="anode"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+
+        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="">
+            <title>Wire_Output</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <wireExtras color="#1e88e5"/>
+                    <connectors>
+                        <connector connectorId="connector0">
+                            <connects>
+                                <connect modelIndex="1002" connectorId="pin1_OUT"/>
+                                <connect modelIndex="1004" connectorId="pin2"/>
+                                <connect modelIndex="1005" connectorId="pin2"/>
+                                <connect modelIndex="1001" connectorId="pin31"/>
+                            </connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+    </instances>
+</module>
