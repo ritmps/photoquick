@@ -47,20 +47,17 @@
     <rect x="135" y="210" width="15" height="10" class="pico-pad"/>
     <text x="125" y="220" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">31 (ADC0)</text>
     <rect x="135" y="280" width="15" height="10" class="pico-pad"/>
-    <text x="125" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">38 (GND)</text>
+    <text x="125" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">33/38 (GND)</text>
   </g>
 
   <!-- DIP-8 Op-Amp (MCP6001 / OPA350) straddling center divider -->
   <g transform="translate(480, 255)">
-    <!-- DIP-8 Body -->
     <rect x="0" y="0" width="90" height="75" rx="3" class="ic-body"/>
-    <circle cx="10" cy="37" r="5" fill="#111111"/> <!-- Notch -->
-    <!-- Pins Top: 1 (Out), 2 (-In), 3 (+In), 4 (Vss/GND) -->
+    <circle cx="10" cy="37" r="5" fill="#111111"/>
     <rect x="12" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="32" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="52" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="72" y="-10" width="8" height="12" class="ic-pin"/>
-    <!-- Pins Bottom: 8 (NC/Vdd), 7 (NC), 6 (NC), 5 (Vdd) -->
     <rect x="12" y="73" width="8" height="12" class="ic-pin"/>
     <rect x="32" y="73" width="8" height="12" class="ic-pin"/>
     <rect x="52" y="73" width="8" height="12" class="ic-pin"/>
@@ -73,7 +70,7 @@
     <text x="76" y="65" fill="#888888" font-family="monospace" font-size="9">8</text>
   </g>
 
-  <!-- Photodiode BPW34 (Flat square silicon PIN package) -->
+  <!-- Photodiode BPW34 -->
   <g transform="translate(350, 180)">
     <rect x="-18" y="-18" width="36" height="36" rx="2" fill="#102040" stroke="#4fc3f7" stroke-width="2"/>
     <circle cx="0" cy="0" r="12" fill="#0d1b2a"/>
@@ -81,7 +78,7 @@
     <text x="0" y="45" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#555555">Photodiode</text>
   </g>
 
-  <!-- Feedback Resistor Rf (100k: Brown, Black, Yellow, Gold) -->
+  <!-- Feedback Resistor Rf -->
   <g transform="translate(520, 160)">
     <line x1="-30" y1="0" x2="30" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
     <rect x="-18" y="-6" width="36" height="12" rx="3" fill="#d7ccc8" stroke="#8d6e63" stroke-width="1.2"/>
@@ -92,7 +89,7 @@
     <text x="40" y="4" class="label" fill="#5d4037">Rf: 100 kΩ</text>
   </g>
 
-  <!-- Feedback Capacitor Cf (Ceramic Disc 2.2pF) -->
+  <!-- Feedback Capacitor Cf -->
   <g transform="translate(520, 115)">
     <line x1="-25" y1="0" x2="25" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
     <circle cx="0" cy="0" r="10" fill="#ffb74d" stroke="#f57c00" stroke-width="1.5"/>
@@ -101,22 +98,13 @@
   </g>
 
   <!-- JUMPER WIRES -->
-  <!-- 3.3V (Red): Pico Pin 36 -> Op-Amp Vdd (Pin 5) -->
   <path d="M 250 240 C 320 240, 420 340, 496 340" class="wire-red"/>
-
-  <!-- Output (Blue): Op-Amp Pin 1 (Out) -> Pico Pin 31 (ADC0) -->
   <path d="M 496 245 C 440 210, 360 330, 250 330" class="wire-blu"/>
-
-  <!-- Feedback loops to Pin 1 and Pin 2 -->
   <path d="M 496 245 L 496 160" class="wire-blu" stroke-width="3"/>
   <path d="M 516 245 C 516 190, 546 160, 546 160" class="wire-grn" stroke-width="3"/>
   <path d="M 496 160 L 496 115" class="wire-blu" stroke-width="2"/>
   <path d="M 546 160 L 546 115" class="wire-grn" stroke-width="2"/>
-
-  <!-- Photodiode Cathode to Op-Amp Pin 2 (-In) -->
   <path d="M 350 195 C 410 210, 450 245, 516 245" class="wire-grn"/>
-
-  <!-- GND (Black): Photodiode Anode, Op-Amp Pin 3 (+In), Pin 4 (Vss) -> Pico Pin 38 -->
   <path d="M 350 165 C 330 140, 310 400, 250 400" class="wire-blk"/>
   <path d="M 536 245 C 536 270, 556 245, 556 245" class="wire-blk" stroke-width="3"/>
   <path d="M 556 245 C 570 300, 500 400, 250 400" class="wire-blk"/>

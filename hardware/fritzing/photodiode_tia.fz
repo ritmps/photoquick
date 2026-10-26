@@ -1,113 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module fritzingVersion="0.9.10" icon="photoquick_tia.png">
-    <title>Photoquick - Photodiode TIA Circuit</title>
-    <label>PQ-TIA</label>
-    <date>2026-10-25</date>
-    <author>ritmps / photoquick</author>
-    <description>Circuit 2: RP2040 Pico + Photodiode + Rail-to-Rail OpAmp TIA</description>
+<module fritzingVersion="1.0.3" icon=".png">
     <views>
-        <view name="breadboardView" zoom="1.0" x="0" y="0"/>
-        <view name="schematicView" zoom="1.0" x="0" y="0"/>
-        <view name="pcbView" zoom="1.0" x="0" y="0"/>
+        <view name="breadboardView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="schematicView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="pcbView" backgroundColor="#333333" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
     </views>
     <instances>
-        <!-- Raspberry Pi Pico -->
-        <instance moduleIdRef="Raspberry-Pi-Pico_breadboard" modelIndex="1001" path="">
-            <title>Pico1</title>
+        <instance moduleIdRef="raspberry_pi_pico_rp2040_1" modelIndex="1001" path="raspberry_pi_pico_rp2040_1.fzp">
+            <title>U1</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="50" y="50" z="1.5"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="1.5" x="50" y="50"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="1.5" x="360" y="80"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="1.5" x="80" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Op-Amp MCP6001 (DIP-8 / SOT-23 Breakout) -->
-        <instance moduleIdRef="DIP8_OpAmp_ModuleID" modelIndex="1002" path="">
-            <title>U2 (MCP6001)</title>
-            <property name="part" value="Microchip MCP6001 Rail-to-Rail OpAmp"/>
+        <instance moduleIdRef="a59353bd0db0225dc22770e292c622f3" modelIndex="1002" path="lm358.fzp">
+            <title>U2</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="120" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="180"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="120"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="120"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Photodiode (BPW34) -->
-        <instance moduleIdRef="PhotodiodeModuleID" modelIndex="1003" path="">
+        <instance moduleIdRef="S1133" modelIndex="1003" path="S1133_Si_Photodiode.fzp">
             <title>D1</title>
-            <property name="part" value="Silicon PIN Photodiode BPW34"/>
             <views>
-                <breadboardView layer="breadboard"><geometry x="230" y="100" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="240" y="140"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="100" y="120"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="180" y="120"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Feedback Resistor Rf (100k) -->
-        <instance moduleIdRef="ResistorModuleID" modelIndex="1004" path="">
+        <instance moduleIdRef="ResistorModuleID" modelIndex="1004" path="resistor.fzp">
+            <property name="Resistance" value="100000"/>
             <title>Rf</title>
-            <property name="resistance" value="100000"/>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="60" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="110"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="60"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Feedback Capacitor Cf (2.2pF) -->
-        <instance moduleIdRef="CapacitorModuleID" modelIndex="1005" path="">
-            <title>Cf</title>
+        <instance moduleIdRef="100milCeramicCapacitorModuleID" modelIndex="1005" path="capacitor_ceramic_100mil.fzp">
             <property name="capacitance" value="2.2pF"/>
+            <title>Cf</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="40" z="2.0"/></breadboardView>
-            </views>
-        </instance>
-
-        <!-- Wires -->
-        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="">
-            <title>Wire_VDD</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#e53935"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1001" connectorId="pin36"/>
-                                <connect modelIndex="1002" connectorId="pin5_VDD"/>
-                            </connects>
-                        </connector>
-                    </connectors>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="60"/>
                 </breadboardView>
-            </views>
-        </instance>
-
-        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="">
-            <title>Wire_GND</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#212121"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1001" connectorId="pin38"/>
-                                <connect modelIndex="1002" connectorId="pin2_VSS"/>
-                                <connect modelIndex="1002" connectorId="pin3_IN_PLUS"/>
-                                <connect modelIndex="1003" connectorId="anode"/>
-                            </connects>
-                        </connector>
-                    </connectors>
-                </breadboardView>
-            </views>
-        </instance>
-
-        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="">
-            <title>Wire_Output</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#1e88e5"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1002" connectorId="pin1_OUT"/>
-                                <connect modelIndex="1004" connectorId="pin2"/>
-                                <connect modelIndex="1005" connectorId="pin2"/>
-                                <connect modelIndex="1001" connectorId="pin31"/>
-                            </connects>
-                        </connector>
-                    </connectors>
-                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="20"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="40"/>
+                </pcbView>
             </views>
         </instance>
     </instances>

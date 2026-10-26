@@ -22,3 +22,4 @@
 
 # Build / scratch
 *.tmp
+*.lck

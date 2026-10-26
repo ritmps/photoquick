@@ -28,9 +28,9 @@
   <line x1="720" y1="480" x2="720" y2="530" stroke="#8b0000" stroke-width="1"/>
   <text x="530" y="472" class="text-title">Photoquick: Phototransistor (Phase 1)</text>
   <text x="530" y="497" class="text-meta">File: phototransistor.kicad_sch</text>
-  <text x="730" y="497" class="text-meta">Rev: 1.0 (KiCad 8.0)</text>
+  <text x="730" y="497" class="text-meta">Rev: 1.1 (KiCad 8.0)</text>
   <text x="530" y="522" class="text-meta">Company: ritmps / photoquick</text>
-  <text x="730" y="522" class="text-meta">Date: 2026-10-25</text>
+  <text x="730" y="522" class="text-meta">Date: 2026-10-26</text>
 
   <!-- Raspberry Pi Pico Symbol Block -->
   <g transform="translate(560, 80)">
@@ -51,7 +51,7 @@
     <!-- Pin 38: GND -->
     <line x1="-30" y1="250" x2="0" y2="250" class="wire"/>
     <text x="-35" y="245" text-anchor="end" class="text-ref">GND</text>
-    <text x="8" y="254" class="text-pin">Pin 38</text>
+    <text x="8" y="254" class="text-pin">Pin 33/38</text>
   </g>
 
   <!-- Phototransistor Q1 -->

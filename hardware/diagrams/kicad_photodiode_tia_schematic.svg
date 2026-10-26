@@ -28,9 +28,9 @@
   <line x1="770" y1="505" x2="770" y2="560" stroke="#8b0000" stroke-width="1"/>
   <text x="590" y="495" class="text-title">Photoquick: Photodiode TIA (Phase 2)</text>
   <text x="590" y="525" class="text-meta">File: photodiode_tia.kicad_sch</text>
-  <text x="780" y="525" class="text-meta">Rev: 1.0 (KiCad 8.0)</text>
+  <text x="780" y="525" class="text-meta">Rev: 1.1 (KiCad 8.0)</text>
   <text x="590" y="552" class="text-meta">Company: ritmps / photoquick</text>
-  <text x="780" y="552" class="text-meta">Date: 2026-10-25</text>
+  <text x="780" y="552" class="text-meta">Date: 2026-10-26</text>
 
   <!-- Raspberry Pi Pico Symbol Block -->
   <g transform="translate(680, 80)">
@@ -51,7 +51,7 @@
     <!-- Pin 38: GND -->
     <line x1="-30" y1="290" x2="0" y2="290" class="wire"/>
     <text x="-35" y="285" text-anchor="end" class="text-ref">GND</text>
-    <text x="8" y="294" class="text-pin">Pin 38</text>
+    <text x="8" y="294" class="text-pin">Pin 33/38</text>
   </g>
 
   <!-- Photodiode D1 (Photovoltaic connection) -->

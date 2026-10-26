@@ -19,7 +19,7 @@ for d in [KICAD_DIR, FRITZING_DIR, DIAGRAMS_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# 1. KiCad v7/v8 Project & Schematics
+# 1. KiCad v8 Project & Schematics (All pins & wires on 1.27mm / 50mil grid)
 # ---------------------------------------------------------------------------
 
 KICAD_PRO = """{
@@ -40,53 +40,67 @@ KICAD_PRO = """{
 }
 """
 
+
 def generate_kicad_phototransistor():
-    u_sch = str(uuid.uuid4())
-    u_pico = str(uuid.uuid4())
-    u_trans = str(uuid.uuid4())
-    u_r1 = str(uuid.uuid4())
-    u_pwr1 = str(uuid.uuid4())
-    u_gnd1 = str(uuid.uuid4())
-    
+    u_sch = "f055fb07-e712-451f-a3fc-accbf129ea5b"
+    u_pico = "5423d4b1-1816-42f2-adc9-3e9fe551b21a"
+    u_trans = "0af5af1f-38c1-45ba-9449-3a965e1d72ab"
+    u_r1 = "afcf5289-acaa-4efe-b2dc-6da086ace2cc"
+
+    # Coordinates strictly on 1.27mm grid:
+    # Q1 at (114.3, 88.9):
+    #   Pin 1 (C) at rel (0, 5.08) -> abs (114.3, 83.82)
+    #   Pin 2 (E) at rel (0, -5.08) -> abs (114.3, 93.98)
+    # R1 at (114.3, 114.3):
+    #   Pin 1 at rel (0, 3.81) -> abs (114.3, 110.49)
+    #   Pin 2 at rel (0, -3.81) -> abs (114.3, 118.11)
+    # U1 at (190.5, 101.6):
+    #   Pin 36 (3V3) at rel (-17.78, 15.24) -> abs (172.72, 86.36)
+    #   Pin 31 (ADC0) at rel (-17.78, 0) -> abs (172.72, 101.6)
+    #   Pin 38 (GND) at rel (-17.78, -15.24) -> abs (172.72, 116.84)
+
     return f"""(kicad_sch (version 20231120) (generator "eeschema") (generator_version "8.0")
   (uuid "{u_sch}")
   (paper "A4")
   (title_block
     (title "Photoquick - Phototransistor Detector (Phase 1)")
-    (date "2026-10-25")
-    (rev "1.0")
+    (date "2026-10-26")
+    (rev "1.1")
     (company "ritmps / photoquick")
     (comment 1 "High-Speed Optical Luminance Measurement")
   )
 
   (lib_symbols
     (symbol "Device:Q_Photo_NPN" (pin_names (offset 0)) (in_bom yes) (on_board yes)
-      (property "Reference" "Q" (at 2.54 2.54 0) (effects (font (size 1.27 1.27))))
-      (property "Value" "Phototransistor_NPN" (at 2.54 -2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Reference" "Q" (at 5.08 1.27 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "Q_Photo_NPN" (at 5.08 -1.27 0) (effects (font (size 1.27 1.27)) (justify left)))
       (symbol "Q_Photo_NPN_0_1"
         (circle (center 0 0) (radius 2.8) (stroke (width 0.254) (type solid)) (fill (type none)))
-        (polyline (pts (xy 0 1.5) (xy 0 0.5) (xy 1.5 2)) (stroke (width 0.254) (type solid)) (fill (type none)))
-        (polyline (pts (xy 0 -1.5) (xy 0 -0.5) (xy 1.5 -2)) (stroke (width 0.254) (type solid)) (fill (type none)))
-        (pin passive line (at 2.54 3.81 270) (length 1.81) (name "C" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
-        (pin passive line (at 2.54 -3.81 90) (length 1.81) (name "E" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
+        (polyline (pts (xy -1.016 -1.778) (xy -1.016 1.778)) (stroke (width 0.508) (type solid)) (fill (type none)))
+        (polyline (pts (xy -1.016 0.762) (xy 0 2.54)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (polyline (pts (xy -1.016 -0.762) (xy 0 -2.54)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (polyline (pts (xy -3.556 1.778) (xy -2.032 0.254)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (polyline (pts (xy -3.556 0.508) (xy -2.032 -1.016)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (pin passive line (at 0 5.08 270) (length 2.54) (name "C" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at 0 -5.08 90) (length 2.54) (name "E" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Device:R" (pin_names (offset 0)) (in_bom yes) (on_board yes)
-      (property "Reference" "R" (at 2.0 0 0) (effects (font (size 1.27 1.27))))
-      (property "Value" "R" (at -2.0 0 0) (effects (font (size 1.27 1.27))))
+      (property "Reference" "R" (at 2.54 1.27 0) (effects (font (size 1.27 1.27)) (justify left)))
+      (property "Value" "R" (at 2.54 -1.27 0) (effects (font (size 1.27 1.27)) (justify left)))
       (symbol "R_0_1"
-        (rectangle (start -1.0 2.54) (end 1.0 -2.54) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (rectangle (start -1.016 2.54) (end 1.016 -2.54) (stroke (width 0.254) (type solid)) (fill (type none)))
         (pin passive line (at 0 3.81 270) (length 1.27) (name "~" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
         (pin passive line (at 0 -3.81 90) (length 1.27) (name "~" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
-    (symbol "MCU_RaspberryPi_Pico:Pico_Header" (pin_names (offset 1.0)) (in_bom yes) (on_board yes)
+    (symbol "MCU_RaspberryPi_Pico:Pico_Header" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 0 25.4 0) (effects (font (size 1.27 1.27))))
       (property "Value" "RP2040_Pico" (at 0 -25.4 0) (effects (font (size 1.27 1.27))))
-      (symbol "Pico_0_1"
-        (rectangle (start -15.24 22.86) (end 15.24 -22.86) (stroke (width 0.254) (type solid)) (fill (type none)))
+      (symbol "Pico_Header_0_1"
+        (rectangle (start -15.24 22.86) (end 15.24 -22.86) (stroke (width 0.254) (type solid)) (fill (type background)))
         (pin power_out line (at -17.78 15.24 0) (length 2.54) (name "3V3_OUT (Pin 36)" (effects (font (size 1.27 1.27)))) (number "36" (effects (font (size 1.27 1.27)))))
-        (pin power_in line (at -17.78 -15.24 0) (length 2.54) (name "GND (Pin 38)" (effects (font (size 1.27 1.27)))) (number "38" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -17.78 -15.24 0) (length 2.54) (name "GND (Pin 33/38)" (effects (font (size 1.27 1.27)))) (number "38" (effects (font (size 1.27 1.27)))))
         (pin input line (at -17.78 0 0) (length 2.54) (name "GPIO26_ADC0 (Pin 31)" (effects (font (size 1.27 1.27)))) (number "31" (effects (font (size 1.27 1.27)))))
       )
     )
@@ -94,27 +108,48 @@ def generate_kicad_phototransistor():
 
   (symbol (lib_id "MCU_RaspberryPi_Pico:Pico_Header") (at 190.5 101.6 0) (unit 1)
     (uuid "{u_pico}")
-    (property "Reference" "U1" (at 190.5 73.66 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "Raspberry Pi Pico" (at 190.5 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "U1" (at 190.5 76.2 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "Raspberry Pi Pico" (at 190.5 127.0 0) (effects (font (size 1.27 1.27))))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "U1") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:Q_Photo_NPN") (at 114.3 88.9 0) (unit 1)
     (uuid "{u_trans}")
-    (property "Reference" "Q1" (at 121.92 86.36 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "Phototransistor (e.g. TEPT5600 / L-53P3C)" (at 121.92 88.9 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "Q1" (at 119.38 87.63 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "Phototransistor (TEPT5600 / L-53P3C)" (at 119.38 90.17 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "Q1") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:R") (at 114.3 114.3 0) (unit 1)
     (uuid "{u_r1}")
-    (property "Reference" "R1" (at 120.65 113.03 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "1k (500R - 2k)" (at 120.65 115.57 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "R1" (at 118.11 113.03 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "1k (500R - 2k)" (at 118.11 115.57 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "R1") (unit 1)
+        )
+      )
+    )
   )
 
-  (wire (pts (xy 114.3 85.09) (xy 114.3 76.2)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 114.3 83.82) (xy 114.3 76.2)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
   (wire (pts (xy 114.3 76.2) (xy 172.72 76.2)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
   (wire (pts (xy 172.72 76.2) (xy 172.72 86.36)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (wire (pts (xy 114.3 92.71) (xy 114.3 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 114.3 93.98) (xy 114.3 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
   (wire (pts (xy 114.3 101.6) (xy 114.3 110.49)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
   (wire (pts (xy 114.3 101.6) (xy 172.72 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
@@ -124,34 +159,55 @@ def generate_kicad_phototransistor():
 
   (junction (at 114.3 101.6) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
 
-  (text "Signal: 0 - 3.3V into Pico ADC0\\nBandwidth: ~50-100 kHz\\nt_r ~3us, t_f ~15us" (at 114.3 140.0 0) (effects (font (size 1.5 1.5))))
+  (text "Signal: 0 - 3.3V into Pico ADC0 (Pin 31)\\nCollector -> 3V3 (Pin 36), R1 -> AGND/GND (Pin 33/38)\\nBandwidth: ~50-100 kHz (t_r ~3us, t_f ~15us)" (at 114.3 139.7 0) (effects (font (size 1.5 1.5)) (justify left)))
 )
 """
 
+
 def generate_kicad_photodiode_tia():
-    u_sch = str(uuid.uuid4())
-    u_pico = str(uuid.uuid4())
-    u_d1 = str(uuid.uuid4())
-    u_opamp = str(uuid.uuid4())
-    u_rf = str(uuid.uuid4())
-    u_cf = str(uuid.uuid4())
-    u_cdec = str(uuid.uuid4())
+    u_sch = "e89bdf9e-44eb-4bd8-936e-8ba6d0338857"
+    u_pico = "9db1b493-9315-41b2-9fbc-e7badec7ba73"
+    u_d1 = "d0992c94-9f9c-4011-8ed7-757fc1f7bdc0"
+    u_opamp = "0d2e770f-f86c-4109-ab23-44e004ba9506"
+    u_rf = "afda547d-8372-495b-833e-0a2f3c81c3f2"
+    u_cf = "86ba7027-7de6-43b2-81c1-e8ef44be129f"
+
+    # All coordinates on 1.27mm grid:
+    # D1 at (95.25, 99.06):
+    #   Pin 1 (A) at rel (-3.81, 0) -> (91.44, 99.06)
+    #   Pin 2 (K) at rel (3.81, 0)  -> (99.06, 99.06)
+    # U2 (OpAmp) at (129.54, 101.6):
+    #   Pin 4 (-In) at rel (-7.62, 2.54)  -> (121.92, 99.06)
+    #   Pin 3 (+In) at rel (-7.62, -2.54) -> (121.92, 104.14)
+    #   Pin 1 (Out) at rel (7.62, 0)      -> (137.16, 101.6)
+    #   Pin 5 (V+)  at rel (0, 6.35)      -> (129.54, 95.25)
+    #   Pin 2 (V-)  at rel (0, -6.35)     -> (129.54, 107.95)
+    # Rf at (129.54, 80.01):
+    #   Pin 1 at rel (-3.81, 0) -> (125.73, 80.01)
+    #   Pin 2 at rel (3.81, 0)  -> (133.35, 80.01)
+    # Cf at (129.54, 67.31):
+    #   Pin 1 at rel (-2.54, 0) -> (127.0, 67.31)
+    #   Pin 2 at rel (2.54, 0)  -> (132.08, 67.31)
+    # U1 (Pico) at (200.66, 101.6):
+    #   Pin 36 (3V3)  at rel (-17.78, 15.24)  -> (182.88, 86.36)
+    #   Pin 31 (ADC0) at rel (-17.78, 0)      -> (182.88, 101.6)
+    #   Pin 38 (GND)  at rel (-17.78, -15.24) -> (182.88, 116.84)
 
     return f"""(kicad_sch (version 20231120) (generator "eeschema") (generator_version "8.0")
   (uuid "{u_sch}")
   (paper "A4")
   (title_block
     (title "Photoquick - Photodiode Transimpedance Amplifier (Phase 2)")
-    (date "2026-10-25")
-    (rev "1.0")
+    (date "2026-10-26")
+    (rev "1.1")
     (company "ritmps / photoquick")
     (comment 1 "High-Speed Transimpedance Amplifier (TIA)")
   )
 
   (lib_symbols
     (symbol "Device:D_Photo" (pin_names (offset 0)) (in_bom yes) (on_board yes)
-      (property "Reference" "D" (at 2.0 0 0) (effects (font (size 1.27 1.27))))
-      (property "Value" "Photodiode" (at -2.0 0 0) (effects (font (size 1.27 1.27))))
+      (property "Reference" "D" (at 0 3.81 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "Photodiode" (at 0 -3.81 0) (effects (font (size 1.27 1.27))))
       (symbol "D_Photo_0_1"
         (polyline (pts (xy -1.27 -1.27) (xy 1.27 0) (xy -1.27 1.27) (xy -1.27 -1.27)) (stroke (width 0.254) (type solid)) (fill (type none)))
         (polyline (pts (xy 1.27 -1.27) (xy 1.27 1.27)) (stroke (width 0.254) (type solid)) (fill (type none)))
@@ -162,220 +218,520 @@ def generate_kicad_photodiode_tia():
     (symbol "Amplifier_Operational:OpAmp_Single" (pin_names (offset 0)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 5.08 5.08 0) (effects (font (size 1.27 1.27))))
       (property "Value" "MCP6001_OPA350" (at 5.08 -5.08 0) (effects (font (size 1.27 1.27))))
-      (symbol "OpAmp_0_1"
-        (polyline (pts (xy -5.08 5.08) (xy 5.08 0) (xy -5.08 -5.08) (xy -5.08 5.08)) (stroke (width 0.254) (type solid)) (fill (type none)))
+      (symbol "OpAmp_Single_0_1"
+        (polyline (pts (xy -5.08 5.08) (xy 5.08 0) (xy -5.08 -5.08) (xy -5.08 5.08)) (stroke (width 0.254) (type solid)) (fill (type background)))
         (pin input line (at -7.62 2.54 0) (length 2.54) (name "-" (effects (font (size 1.27 1.27)))) (number "4" (effects (font (size 1.27 1.27)))))
         (pin input line (at -7.62 -2.54 0) (length 2.54) (name "+" (effects (font (size 1.27 1.27)))) (number "3" (effects (font (size 1.27 1.27)))))
         (pin output line (at 7.62 0 180) (length 2.54) (name "~" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
         (pin power_in line (at 0 6.35 270) (length 3.81) (name "V+" (effects (font (size 1.27 1.27)))) (number "5" (effects (font (size 1.27 1.27)))))
-        (pin power_in line (at 0 -6.35 90) (length 3.81) (name "V-" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at 0 -6.35 90) (length 3.81) (name "V-" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Device:R" (pin_names (offset 0)) (in_bom yes) (on_board yes)
-      (property "Reference" "R" (at 2.0 0 0) (effects (font (size 1.27 1.27))))
-      (property "Value" "R" (at -2.0 0 0) (effects (font (size 1.27 1.27))))
+      (property "Reference" "R" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "R" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
       (symbol "R_0_1"
-        (rectangle (start -2.54 1.0) (end 2.54 -1.0) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (rectangle (start -2.54 1.016) (end 2.54 -1.016) (stroke (width 0.254) (type solid)) (fill (type none)))
         (pin passive line (at -3.81 0 0) (length 1.27) (name "~" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
         (pin passive line (at 3.81 0 180) (length 1.27) (name "~" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
     (symbol "Device:C" (pin_names (offset 0)) (in_bom yes) (on_board yes)
-      (property "Reference" "C" (at 2.0 0 0) (effects (font (size 1.27 1.27))))
-      (property "Value" "C" (at -2.0 0 0) (effects (font (size 1.27 1.27))))
+      (property "Reference" "C" (at 0 2.54 0) (effects (font (size 1.27 1.27))))
+      (property "Value" "C" (at 0 -2.54 0) (effects (font (size 1.27 1.27))))
       (symbol "C_0_1"
-        (polyline (pts (xy -0.635 1.5) (xy -0.635 -1.5)) (stroke (width 0.254) (type solid)) (fill (type none)))
-        (polyline (pts (xy 0.635 1.5) (xy 0.635 -1.5)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (polyline (pts (xy -0.635 1.524) (xy -0.635 -1.524)) (stroke (width 0.254) (type solid)) (fill (type none)))
+        (polyline (pts (xy 0.635 1.524) (xy 0.635 -1.524)) (stroke (width 0.254) (type solid)) (fill (type none)))
         (pin passive line (at -2.54 0 0) (length 1.905) (name "~" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
         (pin passive line (at 2.54 0 180) (length 1.905) (name "~" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
       )
     )
-    (symbol "MCU_RaspberryPi_Pico:Pico_Header" (pin_names (offset 1.0)) (in_bom yes) (on_board yes)
+    (symbol "MCU_RaspberryPi_Pico:Pico_Header" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 0 25.4 0) (effects (font (size 1.27 1.27))))
       (property "Value" "RP2040_Pico" (at 0 -25.4 0) (effects (font (size 1.27 1.27))))
-      (symbol "Pico_0_1"
-        (rectangle (start -15.24 22.86) (end 15.24 -22.86) (stroke (width 0.254) (type solid)) (fill (type none)))
+      (symbol "Pico_Header_0_1"
+        (rectangle (start -15.24 22.86) (end 15.24 -22.86) (stroke (width 0.254) (type solid)) (fill (type background)))
         (pin power_out line (at -17.78 15.24 0) (length 2.54) (name "3V3_OUT (Pin 36)" (effects (font (size 1.27 1.27)))) (number "36" (effects (font (size 1.27 1.27)))))
-        (pin power_in line (at -17.78 -15.24 0) (length 2.54) (name "GND (Pin 38)" (effects (font (size 1.27 1.27)))) (number "38" (effects (font (size 1.27 1.27)))))
+        (pin passive line (at -17.78 -15.24 0) (length 2.54) (name "GND (Pin 33/38)" (effects (font (size 1.27 1.27)))) (number "38" (effects (font (size 1.27 1.27)))))
         (pin input line (at -17.78 0 0) (length 2.54) (name "GPIO26_ADC0 (Pin 31)" (effects (font (size 1.27 1.27)))) (number "31" (effects (font (size 1.27 1.27)))))
       )
     )
   )
 
-  (symbol (lib_id "MCU_RaspberryPi_Pico:Pico_Header") (at 200.0 101.6 0) (unit 1)
+  (symbol (lib_id "MCU_RaspberryPi_Pico:Pico_Header") (at 200.66 101.6 0) (unit 1)
     (uuid "{u_pico}")
-    (property "Reference" "U1" (at 200.0 73.66 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "Raspberry Pi Pico" (at 200.0 129.54 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "U1" (at 200.66 76.2 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "Raspberry Pi Pico" (at 200.66 127.0 0) (effects (font (size 1.27 1.27))))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "U1") (unit 1)
+        )
+      )
+    )
   )
 
-  (symbol (lib_id "Amplifier_Operational:OpAmp_Single") (at 130.0 101.6 0) (unit 1)
+  (symbol (lib_id "Amplifier_Operational:OpAmp_Single") (at 129.54 101.6 0) (unit 1)
     (uuid "{u_opamp}")
-    (property "Reference" "U2" (at 130.0 88.9 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "MCP6001 / OPA350" (at 130.0 114.3 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "U2" (at 135.89 95.25 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "MCP6001 / OPA350" (at 135.89 107.95 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "U2") (unit 1)
+        )
+      )
+    )
   )
 
-  (symbol (lib_id "Device:D_Photo") (at 95.0 99.06 0) (unit 1)
+  (symbol (lib_id "Device:D_Photo") (at 95.25 99.06 0) (unit 1)
     (uuid "{u_d1}")
-    (property "Reference" "D1" (at 95.0 92.0 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "BPW34 / TEMD5010" (at 95.0 106.0 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "D1" (at 95.25 93.98 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "BPW34 / TEMD5010" (at 95.25 104.14 0) (effects (font (size 1.27 1.27))))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "D1") (unit 1)
+        )
+      )
+    )
   )
 
-  (symbol (lib_id "Device:R") (at 130.0 80.0 0) (unit 1)
+  (symbol (lib_id "Device:R") (at 129.54 80.01 0) (unit 1)
     (uuid "{u_rf}")
-    (property "Reference" "Rf" (at 130.0 75.0 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "100k - 470k" (at 130.0 85.0 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "Rf" (at 129.54 76.2 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "100k - 470k" (at 129.54 83.82 0) (effects (font (size 1.27 1.27))))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "Rf") (unit 1)
+        )
+      )
+    )
   )
 
-  (symbol (lib_id "Device:C") (at 130.0 68.0 0) (unit 1)
+  (symbol (lib_id "Device:C") (at 129.54 67.31 0) (unit 1)
     (uuid "{u_cf}")
-    (property "Reference" "Cf" (at 130.0 63.0 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "2.2pF (1-5pF)" (at 130.0 73.0 0) (effects (font (size 1.27 1.27))))
+    (property "Reference" "Cf" (at 129.54 63.5 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "2.2pF (1-5pF)" (at 129.54 71.12 0) (effects (font (size 1.27 1.27))))
+    (instances
+      (project "photoquick"
+        (path "/{u_sch}"
+          (reference "Cf") (unit 1)
+        )
+      )
+    )
   )
 
-  (wire (pts (xy 98.81 99.06) (xy 122.38 99.06)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 110.0 99.06) (xy 110.0 80.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 110.0 80.0) (xy 126.19 80.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 110.0 80.0) (xy 110.0 68.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 110.0 68.0) (xy 127.46 68.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 99.06 99.06) (xy 110.49 99.06)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 110.49 99.06) (xy 121.92 99.06)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 110.49 99.06) (xy 110.49 80.01)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 110.49 80.01) (xy 125.73 80.01)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 110.49 80.01) (xy 110.49 67.31)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 110.49 67.31) (xy 127.0 67.31)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (wire (pts (xy 137.62 101.6) (xy 155.0 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 155.0 101.6) (xy 155.0 80.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 133.81 80.0) (xy 155.0 80.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 155.0 80.0) (xy 155.0 68.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 132.54 68.0) (xy 155.0 68.0)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 137.16 101.6) (xy 154.94 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 154.94 101.6) (xy 154.94 80.01)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 133.35 80.01) (xy 154.94 80.01)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 154.94 80.01) (xy 154.94 67.31)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 132.08 67.31) (xy 154.94 67.31)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (wire (pts (xy 155.0 101.6) (xy 182.22 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 154.94 101.6) (xy 182.88 101.6)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (wire (pts (xy 91.19 99.06) (xy 85.0 99.06)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 85.0 99.06) (xy 85.0 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 122.38 104.14) (xy 120.0 104.14)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 120.0 104.14) (xy 120.0 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 130.0 107.95) (xy 130.0 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 85.0 116.84) (xy 182.22 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 91.44 99.06) (xy 85.09 99.06)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 85.09 99.06) (xy 85.09 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 121.92 104.14) (xy 119.38 104.14)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 119.38 104.14) (xy 119.38 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 129.54 107.95) (xy 129.54 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 85.09 116.84) (xy 119.38 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 119.38 116.84) (xy 129.54 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 129.54 116.84) (xy 182.88 116.84)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (wire (pts (xy 130.0 95.25) (xy 130.0 86.36)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
-  (wire (pts (xy 130.0 86.36) (xy 182.22 86.36)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 129.54 95.25) (xy 129.54 86.36)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
+  (wire (pts (xy 129.54 86.36) (xy 182.88 86.36)) (stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))
 
-  (junction (at 110.0 99.06) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
-  (junction (at 110.0 80.0) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
-  (junction (at 155.0 101.6) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
-  (junction (at 155.0 80.0) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
-  (junction (at 120.0 116.84) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
-  (junction (at 130.0 116.84) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 110.49 99.06) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 110.49 80.01) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 154.94 101.6) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 154.94 80.01) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 119.38 116.84) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
+  (junction (at 129.54 116.84) (diameter 1.0) (color 0 0 0 0) (uuid "{uuid.uuid4()}"))
 
-  (text "High-Speed Transimpedance Amplifier\\nVout = Ip * Rf (Active High 0 - 3.3V)\\nBandwidth > 1 MHz (Allows full 500 kS/s sampling)" (at 90.0 135.0 0) (effects (font (size 1.5 1.5))))
+  (text "High-Speed Transimpedance Amplifier\\nVout = Ip * Rf (Active High 0 - 3.3V)\\nBandwidth > 1 MHz (Allows full 500 kS/s sampling)" (at 85.09 134.62 0) (effects (font (size 1.5 1.5)) (justify left)))
 )
 """
 
+
 # ---------------------------------------------------------------------------
-# 2. Fritzing Sketch XML (.fz) & Bundled (.fzz)
+# 2. Fritzing Self-Contained Custom Parts + Sketch XML (.fz & .fzz)
 # ---------------------------------------------------------------------------
+
+PICO_FZP = """<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.10" moduleId="raspberry_pi_pico_rp2040_1" referenceFile="raspberry_pi_pico_rp2040_1.fzp">
+  <version>4</version>
+  <date>2026-10-26</date>
+  <label>Pico</label>
+  <author>photoquick</author>
+  <title>Raspberry Pi Pico (RP2040)</title>
+  <description>Raspberry Pi Pico RP2040 microcontroller board</description>
+  <tags><tag>Pico</tag><tag>RP2040</tag></tags>
+  <properties>
+    <property name="family">microcontroller</property>
+    <property name="variant">RP2040</property>
+  </properties>
+  <views>
+    <iconView>
+      <layers image="icon/pico_icon.svg"><layer layerId="icon"/></layers>
+    </iconView>
+    <breadboardView>
+      <layers image="breadboard/pico_breadboard.svg"><layer layerId="breadboard"/></layers>
+    </breadboardView>
+    <schematicView>
+      <layers image="schematic/pico_schematic.svg"><layer layerId="schematic"/></layers>
+    </schematicView>
+    <pcbView>
+      <layers image="pcb/pico_pcb.svg">
+        <layer layerId="copper0"/><layer layerId="copper1"/><layer layerId="silkscreen"/>
+      </layers>
+    </pcbView>
+  </views>
+  <connectors>
+    <connector id="pin36" type="male" name="Pin 36 (3V3_OUT)">
+      <description>3.3V Output (Pin 36)</description>
+      <views>
+        <breadboardView><p layer="breadboard" svgId="pin36"/></breadboardView>
+        <schematicView><p layer="schematic" svgId="pin36" terminalId="pin36terminal"/></schematicView>
+        <pcbView><p layer="copper0" svgId="pin36"/><p layer="copper1" svgId="pin36"/></pcbView>
+      </views>
+    </connector>
+    <connector id="pin31" type="male" name="Pin 31 (GP26 / ADC0)">
+      <description>GPIO 26 / ADC0 Input (Pin 31)</description>
+      <views>
+        <breadboardView><p layer="breadboard" svgId="pin31"/></breadboardView>
+        <schematicView><p layer="schematic" svgId="pin31" terminalId="pin31terminal"/></schematicView>
+        <pcbView><p layer="copper0" svgId="pin31"/><p layer="copper1" svgId="pin31"/></pcbView>
+      </views>
+    </connector>
+    <connector id="pin38" type="male" name="Pin 33/38 (GND / AGND)">
+      <description>Ground / Analog Ground (Pin 33/38)</description>
+      <views>
+        <breadboardView><p layer="breadboard" svgId="pin38"/></breadboardView>
+        <schematicView><p layer="schematic" svgId="pin38" terminalId="pin38terminal"/></schematicView>
+        <pcbView><p layer="copper0" svgId="pin38"/><p layer="copper1" svgId="pin38"/></pcbView>
+      </views>
+    </connector>
+  </connectors>
+</module>
+"""
+
+PICO_SVG_BB = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1.6in" height="3.2in" viewBox="0 0 160 320">
+  <g id="breadboard">
+    <rect x="10" y="15" width="140" height="295" rx="6" fill="#00753a" stroke="#004d26" stroke-width="2"/>
+    <rect x="50" y="4" width="60" height="32" rx="3" fill="#b0bec5" stroke="#78909c" stroke-width="1.5"/>
+    <rect x="48" y="110" width="64" height="64" rx="3" fill="#1a1a1a" stroke="#333333"/>
+    <text x="80" y="146" text-anchor="middle" fill="#aaaaaa" font-family="sans-serif" font-size="11">RP2040</text>
+    <text x="80" y="210" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">Raspberry Pi</text>
+    <text x="80" y="228" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13">Pico</text>
+    <circle id="pin36" cx="142" cy="80" r="5" fill="#ffd54f" stroke="#c6a700"/>
+    <text x="132" y="84" text-anchor="end" fill="#ffffff" font-family="sans-serif" font-size="9">36: 3V3</text>
+    <circle id="pin31" cx="142" cy="170" r="5" fill="#ffd54f" stroke="#c6a700"/>
+    <text x="132" y="174" text-anchor="end" fill="#ffffff" font-family="sans-serif" font-size="9">31: GP26/ADC0</text>
+    <circle id="pin38" cx="142" cy="250" r="5" fill="#ffd54f" stroke="#c6a700"/>
+    <text x="132" y="254" text-anchor="end" fill="#ffffff" font-family="sans-serif" font-size="9">33/38: GND</text>
+  </g>
+</svg>
+"""
+
+PICO_SVG_SCH = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1.8in" height="2.4in" viewBox="0 0 180 240">
+  <g id="schematic">
+    <rect x="30" y="10" width="140" height="220" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+    <text x="100" y="40" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold">Raspberry Pi Pico</text>
+    <line id="pin36" x1="0" y1="70" x2="30" y2="70" stroke="#555555" stroke-width="2"/>
+    <rect id="pin36terminal" x="0" y="69" width="2" height="2" fill="none"/>
+    <text x="36" y="74" font-family="sans-serif" font-size="10">3V3_OUT (36)</text>
+    <line id="pin31" x1="0" y1="130" x2="30" y2="130" stroke="#555555" stroke-width="2"/>
+    <rect id="pin31terminal" x="0" y="129" width="2" height="2" fill="none"/>
+    <text x="36" y="134" font-family="sans-serif" font-size="10">GP26/ADC0 (31)</text>
+    <line id="pin38" x1="0" y1="190" x2="30" y2="190" stroke="#555555" stroke-width="2"/>
+    <rect id="pin38terminal" x="0" y="189" width="2" height="2" fill="none"/>
+    <text x="36" y="194" font-family="sans-serif" font-size="10">GND (33/38)</text>
+  </g>
+</svg>
+"""
+
+PICO_SVG_PCB = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1.0in" height="2.0in" viewBox="0 0 100 200">
+  <g id="silkscreen"><rect x="5" y="5" width="90" height="190" fill="none" stroke="#ffffff" stroke-width="2"/></g>
+  <g id="copper0"><g id="copper1">
+    <circle id="pin36" cx="85" cy="50" r="4" fill="none" stroke="#ffbf00" stroke-width="2"/>
+    <circle id="pin31" cx="85" cy="100" r="4" fill="none" stroke="#ffbf00" stroke-width="2"/>
+    <circle id="pin38" cx="85" cy="150" r="4" fill="none" stroke="#ffbf00" stroke-width="2"/>
+  </g></g>
+</svg>
+"""
+
+PHOTOTRANSISTOR_FZP = """<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.10" moduleId="phototransistor_npn_tept5600_1" referenceFile="phototransistor_npn_tept5600_1.fzp">
+  <version>4</version>
+  <date>2026-10-26</date>
+  <label>Q</label>
+  <author>photoquick</author>
+  <title>NPN Phototransistor (TEPT5600)</title>
+  <description>2-lead NPN Silicon Phototransistor (Collector, Emitter)</description>
+  <tags><tag>phototransistor</tag><tag>optical</tag></tags>
+  <properties>
+    <property name="family">Phototransistor</property>
+    <property name="part number">TEPT5600 / L-53P3C</property>
+  </properties>
+  <views>
+    <iconView>
+      <layers image="icon/pt_icon.svg"><layer layerId="icon"/></layers>
+    </iconView>
+    <breadboardView>
+      <layers image="breadboard/pt_breadboard.svg"><layer layerId="breadboard"/></layers>
+    </breadboardView>
+    <schematicView>
+      <layers image="schematic/pt_schematic.svg"><layer layerId="schematic"/></layers>
+    </schematicView>
+    <pcbView>
+      <layers image="pcb/pt_pcb.svg">
+        <layer layerId="copper0"/><layer layerId="copper1"/><layer layerId="silkscreen"/>
+      </layers>
+    </pcbView>
+  </views>
+  <connectors>
+    <connector id="collector" type="male" name="Collector">
+      <description>Collector (connect to 3.3V)</description>
+      <views>
+        <breadboardView><p layer="breadboard" svgId="collector"/></breadboardView>
+        <schematicView><p layer="schematic" svgId="collector" terminalId="collectorterminal"/></schematicView>
+        <pcbView><p layer="copper0" svgId="collector"/><p layer="copper1" svgId="collector"/></pcbView>
+      </views>
+    </connector>
+    <connector id="emitter" type="male" name="Emitter">
+      <description>Emitter (connect to ADC0 + load resistor)</description>
+      <views>
+        <breadboardView><p layer="breadboard" svgId="emitter"/></breadboardView>
+        <schematicView><p layer="schematic" svgId="emitter" terminalId="emitterterminal"/></schematicView>
+        <pcbView><p layer="copper0" svgId="emitter"/><p layer="copper1" svgId="emitter"/></pcbView>
+      </views>
+    </connector>
+  </connectors>
+</module>
+"""
+
+PT_SVG_BB = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="0.6in" height="0.8in" viewBox="0 0 60 80">
+  <g id="breadboard">
+    <line x1="20" y1="35" x2="20" y2="70" stroke="#8c8c8c" stroke-width="3"/>
+    <line x1="40" y1="35" x2="40" y2="70" stroke="#8c8c8c" stroke-width="3"/>
+    <circle id="collector" cx="20" cy="70" r="3" fill="#8c8c8c"/>
+    <circle id="emitter" cx="40" cy="70" r="3" fill="#8c8c8c"/>
+    <circle cx="30" cy="24" r="18" fill="#cce5ff" stroke="#3399ff" stroke-width="2"/>
+    <circle cx="30" cy="24" r="12" fill="#99ccff"/>
+    <text x="30" y="28" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#003366">Q_Photo</text>
+  </g>
+</svg>
+"""
+
+PT_SVG_SCH = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="0.6in" height="0.8in" viewBox="0 0 60 80">
+  <g id="schematic">
+    <circle cx="30" cy="40" r="18" fill="none" stroke="#000000" stroke-width="2"/>
+    <line x1="24" y1="28" x2="24" y2="52" stroke="#000000" stroke-width="2.5"/>
+    <line x1="24" y1="34" x2="36" y2="24" stroke="#000000" stroke-width="2"/>
+    <line id="collector" x1="36" y1="0" x2="36" y2="24" stroke="#000000" stroke-width="2"/>
+    <rect id="collectorterminal" x="35" y="0" width="2" height="2" fill="none"/>
+    <line x1="24" y1="46" x2="36" y2="56" stroke="#000000" stroke-width="2"/>
+    <line id="emitter" x1="36" y1="56" x2="36" y2="80" stroke="#000000" stroke-width="2"/>
+    <rect id="emitterterminal" x="35" y="78" width="2" height="2" fill="none"/>
+  </g>
+</svg>
+"""
+
+PT_SVG_PCB = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="0.4in" height="0.4in" viewBox="0 0 40 40">
+  <g id="silkscreen"><circle cx="20" cy="20" r="15" fill="none" stroke="#ffffff" stroke-width="1.5"/></g>
+  <g id="copper0"><g id="copper1">
+    <circle id="collector" cx="15" cy="20" r="3.5" fill="none" stroke="#ffbf00" stroke-width="2"/>
+    <circle id="emitter" cx="25" cy="20" r="3.5" fill="none" stroke="#ffbf00" stroke-width="2"/>
+  </g></g>
+</svg>
+"""
+
 
 def generate_fritzing_phototransistor():
     return """<?xml version="1.0" encoding="UTF-8"?>
-<module fritzingVersion="0.9.10" icon="photoquick_pt.png">
-    <title>Photoquick - Phototransistor Detector</title>
-    <label>PQ-PT</label>
-    <date>2026-10-25</date>
-    <author>ritmps / photoquick</author>
-    <description>Circuit 1: RP2040 Pico + Phototransistor + Load Resistor</description>
+<module fritzingVersion="1.0.3" icon=".png">
     <views>
-        <view name="breadboardView" zoom="1.0" x="0" y="0"/>
-        <view name="schematicView" zoom="1.0" x="0" y="0"/>
-        <view name="pcbView" zoom="1.0" x="0" y="0"/>
+        <view name="breadboardView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="schematicView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="pcbView" backgroundColor="#333333" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
     </views>
     <instances>
-        <!-- Raspberry Pi Pico -->
-        <instance moduleIdRef="Raspberry-Pi-Pico_breadboard" modelIndex="1001" path="">
-            <title>Pico1</title>
-            <property name="family" value="microcontroller"/>
+        <instance moduleIdRef="raspberry_pi_pico_rp2040_1" modelIndex="1001" path="raspberry_pi_pico_rp2040_1.fzp">
+            <title>U1</title>
             <views>
                 <breadboardView layer="breadboard">
-                    <geometry x="50" y="50" z="1.5"/>
+                    <geometry z="1.5" x="50" y="50"/>
+                    <connectors>
+                        <connector connectorId="pin36" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector0" modelIndex="2001" layer="breadboardWire"/></connects>
+                        </connector>
+                        <connector connectorId="pin31" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector0" modelIndex="2002" layer="breadboardWire"/></connects>
+                        </connector>
+                        <connector connectorId="pin38" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector0" modelIndex="2004" layer="breadboardWire"/></connects>
+                        </connector>
+                    </connectors>
                 </breadboardView>
                 <schematicView layer="schematic">
-                    <geometry x="300" y="100" z="1.5"/>
+                    <geometry z="1.5" x="300" y="80"/>
                 </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="1.5" x="100" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Phototransistor -->
-        <instance moduleIdRef="PhototransistorModuleID" modelIndex="1002" path="">
+        <instance moduleIdRef="phototransistor_npn_tept5600_1" modelIndex="1002" path="phototransistor_npn_tept5600_1.fzp">
             <title>Q1</title>
-            <property name="part" value="Phototransistor (TEPT5600)"/>
             <views>
                 <breadboardView layer="breadboard">
-                    <geometry x="250" y="100" z="2.0"/>
+                    <geometry z="2.0" x="300" y="60"/>
+                    <connectors>
+                        <connector connectorId="collector" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector1" modelIndex="2001" layer="breadboardWire"/></connects>
+                        </connector>
+                        <connector connectorId="emitter" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects>
+                                <connect connectorId="connector1" modelIndex="2002" layer="breadboardWire"/>
+                                <connect connectorId="connector0" modelIndex="2003" layer="breadboardWire"/>
+                            </connects>
+                        </connector>
+                    </connectors>
                 </breadboardView>
                 <schematicView layer="schematic">
-                    <geometry x="150" y="80" z="2.0"/>
+                    <geometry z="2.0" x="140" y="60"/>
                 </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="240" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Load Resistor 1k -->
-        <instance moduleIdRef="ResistorModuleID" modelIndex="1003" path="">
+        <instance moduleIdRef="ResistorModuleID" modelIndex="1003" path="resistor.fzp">
+            <property name="Resistance" value="1000"/>
             <title>R1</title>
-            <property name="resistance" value="1000"/>
             <views>
                 <breadboardView layer="breadboard">
-                    <geometry x="250" y="180" z="2.0"/>
+                    <geometry z="2.0" x="300" y="220"/>
+                    <connectors>
+                        <connector connectorId="connector0" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector1" modelIndex="2003" layer="breadboardWire"/></connects>
+                        </connector>
+                        <connector connectorId="connector1" layer="breadboard">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="connector1" modelIndex="2004" layer="breadboardWire"/></connects>
+                        </connector>
+                    </connectors>
                 </breadboardView>
                 <schematicView layer="schematic">
-                    <geometry x="150" y="180" z="2.0"/>
+                    <geometry z="2.0" x="140" y="200"/>
                 </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="240" y="160"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Wire 1: 3.3V (Pico Pin 36) -> Phototransistor Collector -->
-        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="">
-            <title>Wire_3V3</title>
+        <!-- Wire 1: Pico Pin 36 (3V3) to Q1 Collector -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="wire.fzp">
+            <title>Wire1</title>
             <views>
                 <breadboardView layer="breadboardWire">
-                    <wireExtras color="#e53935"/>
+                    <geometry z="3.5" x="192" y="130" x1="0" y1="0" x2="128" y2="0" wireFlags="64"/>
+                    <wireExtras mils="22.2222" color="#e53935" opacity="1" banded="0"/>
                     <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1001" connectorId="pin36"/>
-                                <connect modelIndex="1002" connectorId="collector"/>
-                            </connects>
+                        <connector connectorId="connector0" layer="breadboardWire">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="pin36" modelIndex="1001" layer="breadboard"/></connects>
+                        </connector>
+                        <connector connectorId="connector1" layer="breadboardWire">
+                            <geometry x="128" y="0"/>
+                            <connects><connect connectorId="collector" modelIndex="1002" layer="breadboard"/></connects>
                         </connector>
                     </connectors>
                 </breadboardView>
             </views>
         </instance>
 
-        <!-- Wire 2: Phototransistor Emitter -> Resistor Pin 1 -> ADC0 (Pico Pin 31) -->
-        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="">
-            <title>Wire_Signal</title>
+        <!-- Wire 2: Pico Pin 31 (ADC0) to Q1 Emitter -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="wire.fzp">
+            <title>Wire2</title>
             <views>
                 <breadboardView layer="breadboardWire">
-                    <wireExtras color="#fdd835"/>
+                    <geometry z="3.5" x="192" y="220" x1="0" y1="0" x2="148" y2="-90" wireFlags="64"/>
+                    <wireExtras mils="22.2222" color="#fdd835" opacity="1" banded="0"/>
                     <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1002" connectorId="emitter"/>
-                                <connect modelIndex="1003" connectorId="pin1"/>
-                                <connect modelIndex="1001" connectorId="pin31"/>
-                            </connects>
+                        <connector connectorId="connector0" layer="breadboardWire">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="pin31" modelIndex="1001" layer="breadboard"/></connects>
+                        </connector>
+                        <connector connectorId="connector1" layer="breadboardWire">
+                            <geometry x="148" y="-90"/>
+                            <connects><connect connectorId="emitter" modelIndex="1002" layer="breadboard"/></connects>
                         </connector>
                     </connectors>
                 </breadboardView>
             </views>
         </instance>
 
-        <!-- Wire 3: Resistor Pin 2 -> GND (Pico Pin 38) -->
-        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="">
-            <title>Wire_GND</title>
+        <!-- Wire 3: Q1 Emitter to R1 connector0 -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="wire.fzp">
+            <title>Wire3</title>
             <views>
                 <breadboardView layer="breadboardWire">
-                    <wireExtras color="#212121"/>
+                    <geometry z="3.5" x="340" y="130" x1="0" y1="0" x2="-35" y2="95" wireFlags="64"/>
+                    <wireExtras mils="22.2222" color="#fdd835" opacity="1" banded="0"/>
                     <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1003" connectorId="pin2"/>
-                                <connect modelIndex="1001" connectorId="pin38"/>
-                            </connects>
+                        <connector connectorId="connector0" layer="breadboardWire">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="emitter" modelIndex="1002" layer="breadboard"/></connects>
+                        </connector>
+                        <connector connectorId="connector1" layer="breadboardWire">
+                            <geometry x="-35" y="95"/>
+                            <connects><connect connectorId="connector0" modelIndex="1003" layer="breadboard"/></connects>
+                        </connector>
+                    </connectors>
+                </breadboardView>
+            </views>
+        </instance>
+
+        <!-- Wire 4: Pico Pin 38 (GND) to R1 connector1 -->
+        <instance moduleIdRef="WireModuleID" modelIndex="2004" path="wire.fzp">
+            <title>Wire4</title>
+            <views>
+                <breadboardView layer="breadboardWire">
+                    <geometry z="3.5" x="192" y="300" x1="0" y1="0" x2="148" y2="-75" wireFlags="64"/>
+                    <wireExtras mils="22.2222" color="#212121" opacity="1" banded="0"/>
+                    <connectors>
+                        <connector connectorId="connector0" layer="breadboardWire">
+                            <geometry x="0" y="0"/>
+                            <connects><connect connectorId="pin38" modelIndex="1001" layer="breadboard"/></connects>
+                        </connector>
+                        <connector connectorId="connector1" layer="breadboardWire">
+                            <geometry x="148" y="-75"/>
+                            <connects><connect connectorId="connector1" modelIndex="1003" layer="breadboard"/></connects>
                         </connector>
                     </connectors>
                 </breadboardView>
@@ -384,123 +740,97 @@ def generate_fritzing_phototransistor():
     </instances>
 </module>
 """
+
 
 def generate_fritzing_photodiode_tia():
     return """<?xml version="1.0" encoding="UTF-8"?>
-<module fritzingVersion="0.9.10" icon="photoquick_tia.png">
-    <title>Photoquick - Photodiode TIA Circuit</title>
-    <label>PQ-TIA</label>
-    <date>2026-10-25</date>
-    <author>ritmps / photoquick</author>
-    <description>Circuit 2: RP2040 Pico + Photodiode + Rail-to-Rail OpAmp TIA</description>
+<module fritzingVersion="1.0.3" icon=".png">
     <views>
-        <view name="breadboardView" zoom="1.0" x="0" y="0"/>
-        <view name="schematicView" zoom="1.0" x="0" y="0"/>
-        <view name="pcbView" zoom="1.0" x="0" y="0"/>
+        <view name="breadboardView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="schematicView" backgroundColor="#ffffff" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
+        <view name="pcbView" backgroundColor="#333333" gridSize="0.1in" showGrid="1" alignToGrid="1" viewFromBelow="0"/>
     </views>
     <instances>
-        <!-- Raspberry Pi Pico -->
-        <instance moduleIdRef="Raspberry-Pi-Pico_breadboard" modelIndex="1001" path="">
-            <title>Pico1</title>
+        <instance moduleIdRef="raspberry_pi_pico_rp2040_1" modelIndex="1001" path="raspberry_pi_pico_rp2040_1.fzp">
+            <title>U1</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="50" y="50" z="1.5"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="1.5" x="50" y="50"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="1.5" x="360" y="80"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="1.5" x="80" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Op-Amp MCP6001 (DIP-8 / SOT-23 Breakout) -->
-        <instance moduleIdRef="DIP8_OpAmp_ModuleID" modelIndex="1002" path="">
-            <title>U2 (MCP6001)</title>
-            <property name="part" value="Microchip MCP6001 Rail-to-Rail OpAmp"/>
+        <instance moduleIdRef="a59353bd0db0225dc22770e292c622f3" modelIndex="1002" path="lm358.fzp">
+            <title>U2</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="120" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="180"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="120"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="120"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Photodiode (BPW34) -->
-        <instance moduleIdRef="PhotodiodeModuleID" modelIndex="1003" path="">
+        <instance moduleIdRef="S1133" modelIndex="1003" path="S1133_Si_Photodiode.fzp">
             <title>D1</title>
-            <property name="part" value="Silicon PIN Photodiode BPW34"/>
             <views>
-                <breadboardView layer="breadboard"><geometry x="230" y="100" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="240" y="140"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="100" y="120"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="180" y="120"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Feedback Resistor Rf (100k) -->
-        <instance moduleIdRef="ResistorModuleID" modelIndex="1004" path="">
+        <instance moduleIdRef="ResistorModuleID" modelIndex="1004" path="resistor.fzp">
+            <property name="Resistance" value="100000"/>
             <title>Rf</title>
-            <property name="resistance" value="100000"/>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="60" z="2.0"/></breadboardView>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="110"/>
+                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="60"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="80"/>
+                </pcbView>
             </views>
         </instance>
 
-        <!-- Feedback Capacitor Cf (2.2pF) -->
-        <instance moduleIdRef="CapacitorModuleID" modelIndex="1005" path="">
-            <title>Cf</title>
+        <instance moduleIdRef="100milCeramicCapacitorModuleID" modelIndex="1005" path="capacitor_ceramic_100mil.fzp">
             <property name="capacitance" value="2.2pF"/>
+            <title>Cf</title>
             <views>
-                <breadboardView layer="breadboard"><geometry x="300" y="40" z="2.0"/></breadboardView>
-            </views>
-        </instance>
-
-        <!-- Wires -->
-        <instance moduleIdRef="WireModuleID" modelIndex="2001" path="">
-            <title>Wire_VDD</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#e53935"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1001" connectorId="pin36"/>
-                                <connect modelIndex="1002" connectorId="pin5_VDD"/>
-                            </connects>
-                        </connector>
-                    </connectors>
+                <breadboardView layer="breadboard">
+                    <geometry z="2.0" x="320" y="60"/>
                 </breadboardView>
-            </views>
-        </instance>
-
-        <instance moduleIdRef="WireModuleID" modelIndex="2002" path="">
-            <title>Wire_GND</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#212121"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1001" connectorId="pin38"/>
-                                <connect modelIndex="1002" connectorId="pin2_VSS"/>
-                                <connect modelIndex="1002" connectorId="pin3_IN_PLUS"/>
-                                <connect modelIndex="1003" connectorId="anode"/>
-                            </connects>
-                        </connector>
-                    </connectors>
-                </breadboardView>
-            </views>
-        </instance>
-
-        <instance moduleIdRef="WireModuleID" modelIndex="2003" path="">
-            <title>Wire_Output</title>
-            <views>
-                <breadboardView layer="breadboardWire">
-                    <wireExtras color="#1e88e5"/>
-                    <connectors>
-                        <connector connectorId="connector0">
-                            <connects>
-                                <connect modelIndex="1002" connectorId="pin1_OUT"/>
-                                <connect modelIndex="1004" connectorId="pin2"/>
-                                <connect modelIndex="1005" connectorId="pin2"/>
-                                <connect modelIndex="1001" connectorId="pin31"/>
-                            </connects>
-                        </connector>
-                    </connectors>
-                </breadboardView>
+                <schematicView layer="schematic">
+                    <geometry z="2.0" x="200" y="20"/>
+                </schematicView>
+                <pcbView layer="copper0">
+                    <geometry z="2.0" x="220" y="40"/>
+                </pcbView>
             </views>
         </instance>
     </instances>
 </module>
 """
+
 
 # ---------------------------------------------------------------------------
 # 3. High-Quality Standalone SVGs for Immediate Visual Comparison in VSCode
@@ -537,9 +867,9 @@ def generate_svg_kicad_phototransistor():
   <line x1="720" y1="480" x2="720" y2="530" stroke="#8b0000" stroke-width="1"/>
   <text x="530" y="472" class="text-title">Photoquick: Phototransistor (Phase 1)</text>
   <text x="530" y="497" class="text-meta">File: phototransistor.kicad_sch</text>
-  <text x="730" y="497" class="text-meta">Rev: 1.0 (KiCad 8.0)</text>
+  <text x="730" y="497" class="text-meta">Rev: 1.1 (KiCad 8.0)</text>
   <text x="530" y="522" class="text-meta">Company: ritmps / photoquick</text>
-  <text x="730" y="522" class="text-meta">Date: 2026-10-25</text>
+  <text x="730" y="522" class="text-meta">Date: 2026-10-26</text>
 
   <!-- Raspberry Pi Pico Symbol Block -->
   <g transform="translate(560, 80)">
@@ -560,7 +890,7 @@ def generate_svg_kicad_phototransistor():
     <!-- Pin 38: GND -->
     <line x1="-30" y1="250" x2="0" y2="250" class="wire"/>
     <text x="-35" y="245" text-anchor="end" class="text-ref">GND</text>
-    <text x="8" y="254" class="text-pin">Pin 38</text>
+    <text x="8" y="254" class="text-pin">Pin 33/38</text>
   </g>
 
   <!-- Phototransistor Q1 -->
@@ -623,6 +953,7 @@ def generate_svg_kicad_phototransistor():
 </svg>
 """
 
+
 def generate_svg_kicad_photodiode_tia():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" width="100%" height="100%">
   <defs>
@@ -654,9 +985,9 @@ def generate_svg_kicad_photodiode_tia():
   <line x1="770" y1="505" x2="770" y2="560" stroke="#8b0000" stroke-width="1"/>
   <text x="590" y="495" class="text-title">Photoquick: Photodiode TIA (Phase 2)</text>
   <text x="590" y="525" class="text-meta">File: photodiode_tia.kicad_sch</text>
-  <text x="780" y="525" class="text-meta">Rev: 1.0 (KiCad 8.0)</text>
+  <text x="780" y="525" class="text-meta">Rev: 1.1 (KiCad 8.0)</text>
   <text x="590" y="552" class="text-meta">Company: ritmps / photoquick</text>
-  <text x="780" y="552" class="text-meta">Date: 2026-10-25</text>
+  <text x="780" y="552" class="text-meta">Date: 2026-10-26</text>
 
   <!-- Raspberry Pi Pico Symbol Block -->
   <g transform="translate(680, 80)">
@@ -677,7 +1008,7 @@ def generate_svg_kicad_photodiode_tia():
     <!-- Pin 38: GND -->
     <line x1="-30" y1="290" x2="0" y2="290" class="wire"/>
     <text x="-35" y="285" text-anchor="end" class="text-ref">GND</text>
-    <text x="8" y="294" class="text-pin">Pin 38</text>
+    <text x="8" y="294" class="text-pin">Pin 33/38</text>
   </g>
 
   <!-- Photodiode D1 (Photovoltaic connection) -->
@@ -802,6 +1133,7 @@ def generate_svg_kicad_photodiode_tia():
 </svg>
 """
 
+
 def generate_svg_fritzing_phototransistor():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 560" width="100%" height="100%">
   <defs>
@@ -837,11 +1169,9 @@ def generate_svg_fritzing_phototransistor():
 
   <!-- Breadboard Pin Holes (Simplified visual array) -->
   <g opacity="0.6">
-    <!-- Top section holes -->
     <circle cx="100" cy="115" r="3.5" class="bb-hole"/><circle cx="100" cy="140" r="3.5" class="bb-hole"/>
     <circle cx="100" cy="165" r="3.5" class="bb-hole"/><circle cx="100" cy="190" r="3.5" class="bb-hole"/>
     <circle cx="100" cy="215" r="3.5" class="bb-hole"/><circle cx="100" cy="240" r="3.5" class="bb-hole"/>
-    <!-- Bottom section holes -->
     <circle cx="100" cy="305" r="3.5" class="bb-hole"/><circle cx="100" cy="330" r="3.5" class="bb-hole"/>
     <circle cx="100" cy="355" r="3.5" class="bb-hole"/><circle cx="100" cy="380" r="3.5" class="bb-hole"/>
     <circle cx="100" cy="405" r="3.5" class="bb-hole"/><circle cx="100" cy="430" r="3.5" class="bb-hole"/>
@@ -857,17 +1187,14 @@ def generate_svg_fritzing_phototransistor():
     <text x="80" y="260" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13">Pico</text>
 
     <!-- Pins on Right Edge -->
-    <!-- Pin 36 (3V3 Out) -->
     <rect x="145" y="120" width="15" height="10" class="pico-pad"/>
     <text x="135" y="130" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">36 (3V3)</text>
 
-    <!-- Pin 31 (GPIO26 / ADC0) -->
     <rect x="145" y="210" width="15" height="10" class="pico-pad"/>
     <text x="135" y="220" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">31 (ADC0)</text>
 
-    <!-- Pin 38 (GND) -->
     <rect x="145" y="280" width="15" height="10" class="pico-pad"/>
-    <text x="135" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">38 (GND)</text>
+    <text x="135" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">33/38 (GND)</text>
   </g>
 
   <!-- Physical Phototransistor (5mm clear epoxy package) -->
@@ -876,17 +1203,14 @@ def generate_svg_fritzing_phototransistor():
     <circle cx="0" cy="0" r="16" fill="#b3d9ff" stroke="#3399ff" stroke-width="1.5"/>
     <rect x="-6" y="-6" width="12" height="12" fill="#1a1a1a"/>
     <text x="35" y="-5" class="label" fill="#003366">Phototransistor (Q1)</text>
-    <text x="35" y="15" font-family="sans-serif" font-size="12" fill="#555555">Long lead = Collector</text>
-    <text x="35" y="30" font-family="sans-serif" font-size="12" fill="#555555">Short lead (flat) = Emitter</text>
+    <text x="35" y="15" font-family="sans-serif" font-size="12" fill="#555555">Collector -> 3V3 (Pin 36)</text>
+    <text x="35" y="30" font-family="sans-serif" font-size="12" fill="#555555">Emitter -> GP26/ADC0 (Pin 31)</text>
   </g>
 
   <!-- Physical 1k Resistor (Thru-hole 1/4W: Brown, Black, Red, Gold) -->
   <g transform="translate(520, 320)">
-    <!-- Leads -->
     <line x1="-40" y1="0" x2="40" y2="0" stroke="#b0bec5" stroke-width="3"/>
-    <!-- Body -->
     <rect x="-24" y="-8" width="48" height="16" rx="4" fill="#d7ccc8" stroke="#8d6e63" stroke-width="1.5"/>
-    <!-- Color Bands: Brown (1), Black (0), Red (x100), Gold (5%) -->
     <rect x="-16" y="-8" width="5" height="16" fill="#5d4037"/>
     <rect x="-6" y="-8" width="5" height="16" fill="#212121"/>
     <rect x="4" y="-8" width="5" height="16" fill="#d32f2f"/>
@@ -896,20 +1220,16 @@ def generate_svg_fritzing_phototransistor():
   </g>
 
   <!-- Fritzing-Style Flexible Jumper Wires -->
-  <!-- Red Wire: Pico Pin 36 -> Phototransistor Collector -->
   <path d="M 300 235 C 380 235, 430 170, 505 170" class="wire-red"/>
-
-  <!-- Yellow Wire: Phototransistor Emitter -> Resistor Lead 1 & Pico Pin 31 (ADC0) -->
   <path d="M 505 195 C 470 240, 480 320, 480 320" class="wire-yel"/>
   <path d="M 480 320 C 440 320, 370 325, 300 325" class="wire-yel"/>
-
-  <!-- Black Wire: Resistor Lead 2 -> Pico Pin 38 (GND) -->
   <path d="M 560 320 C 620 320, 620 420, 460 420 C 370 420, 350 395, 300 395" class="wire-blk"/>
 
   <!-- Banner / Header -->
   <text x="60" y="35" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333333">Fritzing Breadboard View: Phototransistor (Circuit 1)</text>
 </svg>
 """
+
 
 def generate_svg_fritzing_photodiode_tia():
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 580" width="100%" height="100%">
@@ -961,20 +1281,17 @@ def generate_svg_fritzing_photodiode_tia():
     <rect x="135" y="210" width="15" height="10" class="pico-pad"/>
     <text x="125" y="220" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">31 (ADC0)</text>
     <rect x="135" y="280" width="15" height="10" class="pico-pad"/>
-    <text x="125" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">38 (GND)</text>
+    <text x="125" y="290" text-anchor="end" fill="#ffffff" font-family="monospace" font-size="11">33/38 (GND)</text>
   </g>
 
   <!-- DIP-8 Op-Amp (MCP6001 / OPA350) straddling center divider -->
   <g transform="translate(480, 255)">
-    <!-- DIP-8 Body -->
     <rect x="0" y="0" width="90" height="75" rx="3" class="ic-body"/>
-    <circle cx="10" cy="37" r="5" fill="#111111"/> <!-- Notch -->
-    <!-- Pins Top: 1 (Out), 2 (-In), 3 (+In), 4 (Vss/GND) -->
+    <circle cx="10" cy="37" r="5" fill="#111111"/>
     <rect x="12" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="32" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="52" y="-10" width="8" height="12" class="ic-pin"/>
     <rect x="72" y="-10" width="8" height="12" class="ic-pin"/>
-    <!-- Pins Bottom: 8 (NC/Vdd), 7 (NC), 6 (NC), 5 (Vdd) -->
     <rect x="12" y="73" width="8" height="12" class="ic-pin"/>
     <rect x="32" y="73" width="8" height="12" class="ic-pin"/>
     <rect x="52" y="73" width="8" height="12" class="ic-pin"/>
@@ -987,7 +1304,7 @@ def generate_svg_fritzing_photodiode_tia():
     <text x="76" y="65" fill="#888888" font-family="monospace" font-size="9">8</text>
   </g>
 
-  <!-- Photodiode BPW34 (Flat square silicon PIN package) -->
+  <!-- Photodiode BPW34 -->
   <g transform="translate(350, 180)">
     <rect x="-18" y="-18" width="36" height="36" rx="2" fill="#102040" stroke="#4fc3f7" stroke-width="2"/>
     <circle cx="0" cy="0" r="12" fill="#0d1b2a"/>
@@ -995,7 +1312,7 @@ def generate_svg_fritzing_photodiode_tia():
     <text x="0" y="45" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#555555">Photodiode</text>
   </g>
 
-  <!-- Feedback Resistor Rf (100k: Brown, Black, Yellow, Gold) -->
+  <!-- Feedback Resistor Rf -->
   <g transform="translate(520, 160)">
     <line x1="-30" y1="0" x2="30" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
     <rect x="-18" y="-6" width="36" height="12" rx="3" fill="#d7ccc8" stroke="#8d6e63" stroke-width="1.2"/>
@@ -1006,7 +1323,7 @@ def generate_svg_fritzing_photodiode_tia():
     <text x="40" y="4" class="label" fill="#5d4037">Rf: 100 kΩ</text>
   </g>
 
-  <!-- Feedback Capacitor Cf (Ceramic Disc 2.2pF) -->
+  <!-- Feedback Capacitor Cf -->
   <g transform="translate(520, 115)">
     <line x1="-25" y1="0" x2="25" y2="0" stroke="#b0bec5" stroke-width="2.5"/>
     <circle cx="0" cy="0" r="10" fill="#ffb74d" stroke="#f57c00" stroke-width="1.5"/>
@@ -1015,22 +1332,13 @@ def generate_svg_fritzing_photodiode_tia():
   </g>
 
   <!-- JUMPER WIRES -->
-  <!-- 3.3V (Red): Pico Pin 36 -> Op-Amp Vdd (Pin 5) -->
   <path d="M 250 240 C 320 240, 420 340, 496 340" class="wire-red"/>
-
-  <!-- Output (Blue): Op-Amp Pin 1 (Out) -> Pico Pin 31 (ADC0) -->
   <path d="M 496 245 C 440 210, 360 330, 250 330" class="wire-blu"/>
-
-  <!-- Feedback loops to Pin 1 and Pin 2 -->
   <path d="M 496 245 L 496 160" class="wire-blu" stroke-width="3"/>
   <path d="M 516 245 C 516 190, 546 160, 546 160" class="wire-grn" stroke-width="3"/>
   <path d="M 496 160 L 496 115" class="wire-blu" stroke-width="2"/>
   <path d="M 546 160 L 546 115" class="wire-grn" stroke-width="2"/>
-
-  <!-- Photodiode Cathode to Op-Amp Pin 2 (-In) -->
   <path d="M 350 195 C 410 210, 450 245, 516 245" class="wire-grn"/>
-
-  <!-- GND (Black): Photodiode Anode, Op-Amp Pin 3 (+In), Pin 4 (Vss) -> Pico Pin 38 -->
   <path d="M 350 165 C 330 140, 310 400, 250 400" class="wire-blk"/>
   <path d="M 536 245 C 536 270, 556 245, 556 245" class="wire-blk" stroke-width="3"/>
   <path d="M 556 245 C 570 300, 500 400, 250 400" class="wire-blk"/>
@@ -1040,9 +1348,23 @@ def generate_svg_fritzing_photodiode_tia():
 </svg>
 """
 
-# ---------------------------------------------------------------------------
-# Execution: Write files to disk
-# ---------------------------------------------------------------------------
+
+def write_bundled_fzz(fzz_path, fz_filename, fz_content, include_pt=True):
+    with zipfile.ZipFile(fzz_path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr(fz_filename, fz_content)
+        # Bundle Raspberry Pi Pico custom part + SVGs
+        z.writestr("part.raspberry_pi_pico_rp2040_1.fzp", PICO_FZP)
+        z.writestr("svg.icon.pico_icon.svg", PICO_SVG_BB)
+        z.writestr("svg.breadboard.pico_breadboard.svg", PICO_SVG_BB)
+        z.writestr("svg.schematic.pico_schematic.svg", PICO_SVG_SCH)
+        z.writestr("svg.pcb.pico_pcb.svg", PICO_SVG_PCB)
+        if include_pt:
+            z.writestr("part.phototransistor_npn_tept5600_1.fzp", PHOTOTRANSISTOR_FZP)
+            z.writestr("svg.icon.pt_icon.svg", PT_SVG_BB)
+            z.writestr("svg.breadboard.pt_breadboard.svg", PT_SVG_BB)
+            z.writestr("svg.schematic.pt_schematic.svg", PT_SVG_SCH)
+            z.writestr("svg.pcb.pt_pcb.svg", PT_SVG_PCB)
+
 
 def main():
     print("Generating KiCad files...")
@@ -1056,7 +1378,7 @@ def main():
     print("Generating Fritzing files...")
     pt_fz = generate_fritzing_phototransistor()
     tia_fz = generate_fritzing_photodiode_tia()
-    
+
     pt_fz_path = os.path.join(FRITZING_DIR, "phototransistor.fz")
     tia_fz_path = os.path.join(FRITZING_DIR, "photodiode_tia.fz")
     with open(pt_fz_path, "w") as f:
@@ -1064,11 +1386,18 @@ def main():
     with open(tia_fz_path, "w") as f:
         f.write(tia_fz)
 
-    # Package as .fzz (standard Fritzing zip format)
-    with zipfile.ZipFile(os.path.join(FRITZING_DIR, "phototransistor.fzz"), "w") as z:
-        z.writestr("phototransistor.fz", pt_fz)
-    with zipfile.ZipFile(os.path.join(FRITZING_DIR, "photodiode_tia.fzz"), "w") as z:
-        z.writestr("photodiode_tia.fz", tia_fz)
+    write_bundled_fzz(
+        os.path.join(FRITZING_DIR, "phototransistor.fzz"),
+        "phototransistor.fz",
+        pt_fz,
+        include_pt=True,
+    )
+    write_bundled_fzz(
+        os.path.join(FRITZING_DIR, "photodiode_tia.fzz"),
+        "photodiode_tia.fz",
+        tia_fz,
+        include_pt=False,
+    )
 
     print("Generating Standalone SVG Diagrams for instant preview...")
     with open(os.path.join(DIAGRAMS_DIR, "kicad_phototransistor_schematic.svg"), "w") as f:
@@ -1082,6 +1411,6 @@ def main():
 
     print("All files generated successfully!")
 
+
 if __name__ == "__main__":
     main()
-
